@@ -24,12 +24,13 @@ import json
 #             print("Invalid input. Please try again.")
 
 def main_loop(keychain):
+    keychain.load_keychain()
     user_input = ""
     print("\n" * 100)
     while user_input != "q":
 
         print("-----------------------------------------------------------------")
-        print("Enter input: (d)isplay keychain  (a)dd key  (r)emove key  (q)uit")
+        print(">: (d)isplay keychain (a)dd key (r)emove key (s)ave Keychain       (q)uit")
         user_input = input(">").lower()
         if user_input == "d":
             print("\n" * 100)
@@ -38,7 +39,8 @@ def main_loop(keychain):
         if user_input == "r":
             user_input = input("Remove key with ID: ")
             keychain.remove_key(int(user_input))
-
+        if user_input == "s":
+            keychain.save_keychain()
         if user_input == "g":
             password_generator(20)
             print("Generated Password: " + password_generator(20))
@@ -54,7 +56,7 @@ keychain1.add_key("Fidelity", "dn52002@gmail.com", password_generator(20))
 # keychain1.remove_key(0)
 # keychain1.display_key_list()
 
-print()
+# keychain1.load_keychain()
+# keychain1.display_key_list()
 
-with open("data.json", "w") as file:
-    json.dump(keychain1.to_dict(), file)
+main_loop(keychain1)

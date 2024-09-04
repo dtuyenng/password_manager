@@ -1,3 +1,4 @@
+import json
 import uuid
 from password_generator import password_generator
 
@@ -7,7 +8,12 @@ class Keychain:
         self.key_list = []
         self.next_id = 0
 
-    def to_dict(self):
+    # Convert the class object to a dictionary but since the class has a
+    # key_list which itself has objects in it, we need to first iterate through
+    # them and use their own to_dict method to convert to a dictionary
+    # We then return the dictionary
+
+    def to_dict(self) -> dict:
         key_list_dict= []
         for key_obj in self.key_list:
             key_list_dict.append(key_obj.to_dict())
@@ -16,12 +22,21 @@ class Keychain:
             "key_list": key_list_dict
         }
 
+    def load_keychain(self):
+        with open("keychain.json", "r") as file:
+            data = json.load(file)
+            for key in data["key_list"]:
+                self.add_key(key["label"], key["username"], key["password"])
 
+
+    def save_keychain(self):
+        with open("keychain.json", "w") as file:
+            json.dump(self.to_dict(), file)
 
     def display_key_list(self):
         print("Printing Keychain")
         for key in self.key_list:
-            print(f"ID:{key.key_id}   Label: {key.key_label}  |   Username: {key.username}    |    Password: {key.password}")
+            print(f"ID:{key.id}   Label: {key.label}  |   Username: {key.username}    |    Password: {key.password}")
 
     def add_key(self, label, username, password):
         new_key = Key(self.next_id, label, username, password)
@@ -29,15 +44,13 @@ class Keychain:
         self.key_list.append(new_key)
         print("Key added")
 
-    def remove_key(self, key_id):
+    def remove_key(self, id):
         for key in self.key_list:
-            if key.key_id == key_id:
+            if key.id == id:
                 self.key_list.remove(key)
-
 
     def modify_key(self):
         print("Key modified")
-
 
 class Key:
     def __init__(self, key_id, key_label: str, username: str, password: str):
