@@ -1,5 +1,8 @@
+from importlib.metadata import files
 
 from Keychain import *
+from password_generator import password_generator
+import json
 
 
 # def main_loop(user):
@@ -22,17 +25,23 @@ from Keychain import *
 
 def main_loop(keychain):
     user_input = ""
+    print("\n" * 100)
     while user_input != "q":
+
         print("-----------------------------------------------------------------")
         print("Enter input: (d)isplay keychain  (a)dd key  (r)emove key  (q)uit")
         user_input = input(">").lower()
         if user_input == "d":
+            print("\n" * 100)
             print("Keychain: ")
             keychain.display_key_list()
         if user_input == "r":
-            keychain.display_key_list()
             user_input = input("Remove key with ID: ")
             keychain.remove_key(int(user_input))
+
+        if user_input == "g":
+            password_generator(20)
+            print("Generated Password: " + password_generator(20))
 
 
 keychain1 = Keychain("password123")
@@ -40,7 +49,12 @@ keychain1.add_key("Google", "dn52002@gmail.com", password_generator(20))
 keychain1.add_key("Bank of America", "dn52002@gmail.com", password_generator(20))
 keychain1.add_key("Fidelity", "dn52002@gmail.com", password_generator(20))
 
-main_loop(keychain1)
+# main_loop(keychain1)
 # keychain1.display_key_list()
 # keychain1.remove_key(0)
 # keychain1.display_key_list()
+
+print()
+
+with open("data.json", "w") as file:
+    json.dump(keychain1.to_dict(), file)

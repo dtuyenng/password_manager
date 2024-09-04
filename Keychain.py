@@ -2,10 +2,21 @@ import uuid
 from password_generator import password_generator
 
 class Keychain:
-    def __init__(self, pwd):
-        self.pwd = pwd
+    def __init__(self, password):
+        self.password = password
         self.key_list = []
         self.next_id = 0
+
+    def to_dict(self):
+        key_list_dict= []
+        for key_obj in self.key_list:
+            key_list_dict.append(key_obj.to_dict())
+        return {
+            "password": self.password,
+            "key_list": key_list_dict
+        }
+
+
 
     def display_key_list(self):
         print("Printing Keychain")
@@ -30,8 +41,15 @@ class Keychain:
 
 class Key:
     def __init__(self, key_id, key_label: str, username: str, password: str):
-        self.key_id = key_id
-        self.key_label = key_label
+        self.id = key_id
+        self.label = key_label
         self.username = username
         self.password = password
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "label": self.label,
+            "username": self.username,
+            "password": self.password,
+        }
