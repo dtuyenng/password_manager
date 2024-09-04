@@ -41,15 +41,18 @@ def main_loop(keychain):
             keychain.remove_key(int(user_input))
         if user_input == "s":
             keychain.save_keychain()
+            keychain.delete_allkeys()
+            keychain.load_keychain()
+            keychain.display_key_list()
         if user_input == "g":
             password_generator(20)
             print("Generated Password: " + password_generator(20))
 
 
 keychain1 = Keychain("password123")
-keychain1.add_key("Google", "dn52002@gmail.com", password_generator(20))
-keychain1.add_key("Bank of America", "dn52002@gmail.com", password_generator(20))
-keychain1.add_key("Fidelity", "dn52002@gmail.com", password_generator(20))
+# keychain1.add_key("Google", "dn52002@gmail.com", password_generator(20))
+# keychain1.add_key("Bank of America", "dn52002@gmail.com", password_generator(20))
+# keychain1.add_key("Fidelity", "dn52002@gmail.com", password_generator(20))
 
 # main_loop(keychain1)
 # keychain1.display_key_list()

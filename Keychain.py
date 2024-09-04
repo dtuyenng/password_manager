@@ -22,6 +22,9 @@ class Keychain:
             "key_list": key_list_dict
         }
 
+    def delete_allkeys(self):
+        self.key_list = []
+
     def load_keychain(self):
         with open("keychain.json", "r") as file:
             data = json.load(file)
