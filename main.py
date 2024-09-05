@@ -25,8 +25,6 @@ import json
 def main():
     print("\n" * 100)
     while True:
-        
-        keychain.display_key_list()
         print("(d)isplay keychain (a)dd key (r)emove key (s)ave Keychain       (q)uit")
         user_input = input(">").lower()
         if user_input == "d":
@@ -37,9 +35,6 @@ def main():
             keychain.remove_key(int(user_input))
         if user_input == "s":
             keychain.save_keychain()
-            keychain.delete_allkeys()
-            keychain.load_keychain()
-            keychain.display_key_list()
         if user_input == "g":
             password_generator(20)
             print("Generated Password: " + password_generator(20))
@@ -47,7 +42,7 @@ def main():
             break
 
 
-def authenticate(keychain) -> bool:
+# def authenticate(keychain) -> bool:
     max_attempt = 3
     while max_attempt > 0:
         password_input = input("Enter Password: ")
@@ -61,8 +56,8 @@ def authenticate(keychain) -> bool:
     
 if __name__ == "__main__":
     keychain = Keychain()
-    if authenticate(keychain):
-    	main()
+    # if authenticate(keychain):
+    main()
 
 
 

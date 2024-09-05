@@ -28,16 +28,18 @@ class Keychain:
         self.key_list = []
 
     def load_keychain(self):
-        with open("keychain.json", "r") as file:
-            data = json.load(file)
+        self.delete_allkeys #clear from all keys
+        with open("data.bin", "rb") as file:
+            data = pickle.load(file)
         self.password = data["password"]
         for key in data["key_list"]:
             self.add_key(key["label"], key["username"], key["password"])
 
 
     def save_keychain(self):
-        with open("keychain.json", "wb") as file:
-            json.dump(self.to_dict(), file)
+        with open("data.bin", "wb") as file:
+            pickle.dump(self.to_dict(), file)
+        # self.display_key_list
 
     def display_key_list(self):
         print("Registered Keys:")
