@@ -1,12 +1,14 @@
 import json
 import uuid
 from password_generator import password_generator
+import pickle
 
 class Keychain:
-    def __init__(self, password):
-        self.password = password
+    def __init__(self):
+        self.password = ""
         self.key_list = []
         self.next_id = 0
+        self.load_keychain()
 
     # Convert the class object to a dictionary but since the class has a
     # key_list which itself has objects in it, we need to first iterate through
@@ -28,16 +30,17 @@ class Keychain:
     def load_keychain(self):
         with open("keychain.json", "r") as file:
             data = json.load(file)
-            for key in data["key_list"]:
-                self.add_key(key["label"], key["username"], key["password"])
+        self.password = data["password"]
+        for key in data["key_list"]:
+            self.add_key(key["label"], key["username"], key["password"])
 
 
     def save_keychain(self):
-        with open("keychain.json", "w") as file:
+        with open("keychain.json", "wb") as file:
             json.dump(self.to_dict(), file)
 
     def display_key_list(self):
-        print("Printing Keychain")
+        print("Registered Keys:")
         for key in self.key_list:
             print(f"ID:{key.id}   Label: {key.label}  |   Username: {key.username}    |    Password: {key.password}")
 
@@ -45,7 +48,6 @@ class Keychain:
         new_key = Key(self.next_id, label, username, password)
         self.next_id += 1
         self.key_list.append(new_key)
-        print("Key added")
 
     def remove_key(self, id):
         for key in self.key_list:

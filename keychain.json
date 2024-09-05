@@ -1,1 +1,23 @@
-{"password": "password123", "key_list": [{"id": 0, "label": "Google", "username": "dn52002@gmail.com", "password": "uEVE2W542M^&wSnm4*6v"}, {"id": 1, "label": "Fidelity", "username": "dn52002@gmail.com", "password": "Q49Nn3RLa1*3*1XXt*wj"}, {"id": 2, "label": "Google", "username": "dn52002@gmail.com", "password": "szV73%e93$3wck6%mbJx"}]}
+{
+  "password": "stupid",
+  "key_list": [
+    {
+      "id": 0,
+      "label": "Google",
+      "username": "dn52002@gmail.com",
+      "password": "uEVE2W542M^&wSnm4*6v"
+    },
+    {
+      "id": 1,
+      "label": "Fidelity",
+      "username": "dn52002@gmail.com",
+      "password": "Q49Nn3RLa1*3*1XXt*wj"
+    },
+    {
+      "id": 2,
+      "label": "Google",
+      "username": "dn52002@gmail.com",
+      "password": "szV73%e93$3wck6%mbJx"
+    }
+  ]
+}

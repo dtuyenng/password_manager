@@ -1,5 +1,4 @@
 from importlib.metadata import files
-
 from Keychain import *
 from password_generator import password_generator
 import json
@@ -23,18 +22,15 @@ import json
 #         elif user_input != "q":
 #             print("Invalid input. Please try again.")
 
-def main_loop(keychain):
-    keychain.load_keychain()
-    user_input = ""
+def main():
     print("\n" * 100)
-    while user_input != "q":
-
-        print("-----------------------------------------------------------------")
-        print(">: (d)isplay keychain (a)dd key (r)emove key (s)ave Keychain       (q)uit")
+    while True:
+        
+        keychain.display_key_list()
+        print("(d)isplay keychain (a)dd key (r)emove key (s)ave Keychain       (q)uit")
         user_input = input(">").lower()
         if user_input == "d":
             print("\n" * 100)
-            print("Keychain: ")
             keychain.display_key_list()
         if user_input == "r":
             user_input = input("Remove key with ID: ")
@@ -47,9 +43,33 @@ def main_loop(keychain):
         if user_input == "g":
             password_generator(20)
             print("Generated Password: " + password_generator(20))
+        if user_input == "q":
+            break
 
 
-keychain1 = Keychain("password123")
+def authenticate(keychain) -> bool:
+    max_attempt = 3
+    while max_attempt > 0:
+        password_input = input("Enter Password: ")
+        if password_input == keychain.password:
+            return True
+        else:
+            max_attempt -= 1
+    print("Too many attempts.")
+    return False
+        
+    
+if __name__ == "__main__":
+    keychain = Keychain()
+    if authenticate(keychain):
+    	main()
+
+
+
+
+
+
+
 # keychain1.add_key("Google", "dn52002@gmail.com", password_generator(20))
 # keychain1.add_key("Bank of America", "dn52002@gmail.com", password_generator(20))
 # keychain1.add_key("Fidelity", "dn52002@gmail.com", password_generator(20))
@@ -62,4 +82,4 @@ keychain1 = Keychain("password123")
 # keychain1.load_keychain()
 # keychain1.display_key_list()
 
-main_loop(keychain1)
+
