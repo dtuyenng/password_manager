@@ -2,6 +2,7 @@ import json
 import uuid
 from password_generator import password_generator
 import pickle
+from encryption import encrypt, decrypt
 
 class Keychain:
     def __init__(self):
@@ -27,7 +28,7 @@ class Keychain:
     def load_keychain(self):
         self.remove_allkeys() #clear from all keys
         with open("data.bin", "rb") as file:
-            data = pickle.load(file)
+            data = pickle.load(file) #add decrypt here
         self.password = data["password"]
         for key in data["key_list"]:
             self.add_key(key["label"], key["username"], key["password"])

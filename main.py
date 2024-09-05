@@ -1,6 +1,7 @@
 from importlib.metadata import files
 from Keychain import *
 from password_generator import password_generator
+from authenticate import authenticate
 import json
 
 
@@ -24,6 +25,7 @@ import json
 
 def main():
     print("\n" * 100)
+    keychain.display_keys()
     while True:
         print("(d)isplay keychain (a)dd key (r)emove key (s)ave Keychain       (q)uit")
         user_input = input(">").lower()
@@ -42,18 +44,6 @@ def main():
             break
 
 
-def authenticate(keychain) -> bool:
-    max_attempt = 3
-    while max_attempt > 0:
-        password_input = input("Enter Password: ")
-        if password_input == keychain.password:
-            return True
-        else:
-            max_attempt -= 1
-    print("Too many attempts.")
-    return False
-        
-    
 if __name__ == "__main__":
     keychain = Keychain()
     if authenticate(keychain):
