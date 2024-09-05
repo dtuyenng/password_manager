@@ -24,11 +24,8 @@ class Keychain:
             "key_list": key_list_dict
         }
 
-    def delete_allkeys(self):
-        self.key_list = []
-
     def load_keychain(self):
-        self.delete_allkeys #clear from all keys
+        self.remove_allkeys() #clear from all keys
         with open("data.bin", "rb") as file:
             data = pickle.load(file)
         self.password = data["password"]
@@ -41,7 +38,7 @@ class Keychain:
             pickle.dump(self.to_dict(), file)
         # self.display_key_list
 
-    def display_key_list(self):
+    def display_keys(self):
         print("Registered Keys:")
         for key in self.key_list:
             print(f"ID:{key.id}   Label: {key.label}  |   Username: {key.username}    |    Password: {key.password}")
@@ -55,6 +52,9 @@ class Keychain:
         for key in self.key_list:
             if key.id == id:
                 self.key_list.remove(key)
+
+    def remove_allkeys(self):
+        self.key_list = []
 
     def modify_key(self):
         print("Key modified")

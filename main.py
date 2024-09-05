@@ -29,7 +29,7 @@ def main():
         user_input = input(">").lower()
         if user_input == "d":
             print("\n" * 100)
-            keychain.display_key_list()
+            keychain.display_keys()
         if user_input == "r":
             user_input = input("Remove key with ID: ")
             keychain.remove_key(int(user_input))
@@ -42,7 +42,7 @@ def main():
             break
 
 
-# def authenticate(keychain) -> bool:
+def authenticate(keychain) -> bool:
     max_attempt = 3
     while max_attempt > 0:
         password_input = input("Enter Password: ")
@@ -56,9 +56,8 @@ def main():
     
 if __name__ == "__main__":
     keychain = Keychain()
-    # if authenticate(keychain):
-    main()
-
+    if authenticate(keychain):
+        main()
 
 
 
