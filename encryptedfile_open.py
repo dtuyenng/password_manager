@@ -4,18 +4,9 @@
 # import base64
 # import os
 # import pickle
+# import json
 #
-#
-# # Your password
-# password = b"my_super_secret_password"
-#
-#
-# ################### UNSALTED #######################
-# # # Hash the password to generate a key
-# # digest = hashes.Hash(hashes.SHA256())
-# # digest.update(password)
-# # key = base64.urlsafe_b64encode(digest.finalize())
-# ################### UNSALTED #######################
+# password = b"stupid"
 #
 # # Generate a key using PBKDF2HMAC for better security
 # salt = b"&fj3adslkj$39-kjhu3"
@@ -27,21 +18,35 @@
 # )
 # key = base64.urlsafe_b64encode(kdf.derive(password))
 #
-# # Create a Fernet instance with the derived key
 # fernet = Fernet(key)
 #
-# # Encrypt a message
+# data = {'name': 'John', 'age': 30, 'city': 'New York'}
+# data_bytes = json.dumps(data).encode()
 #
-# message = b"1234 is the nuclear code"
-# encrypted_message = fernet.encrypt(message)
-# print("Encrypted message:", encrypted_message)
 #
+# encrypted_data = fernet.encrypt(data_bytes)
 #
 # # Decrypt the message
 # try:
-#     decrypted_message = fernet.decrypt(encrypted_message)
+#     decrypted_message = fernet.decrypt(encrypted_data)
 #     print("Decrypted message:", decrypted_message.decode())
 # except InvalidToken:
 #     print("Decryption failed. The password might be incorrect or the data might be corrupted.")
 # except Exception as e:
 #     print(f"An error occurred: {e}")
+#
+#
+#
+# def encrypt_data():
+#     pass
+#
+# def decrypt_data():
+#     pass
+#
+#
+#
+# with open("encrypted_data.bin","wb") as file:
+#     pickle.dump(data, file)
+#
+# with open("encrypted_data.bin","rb") as file:
+#     loaded_data = pickle.load(file)

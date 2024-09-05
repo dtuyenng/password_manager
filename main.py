@@ -24,7 +24,7 @@ import json
 #             print("Invalid input. Please try again.")
 
 def main():
-    print("\n" * 100)
+    # print("\n" * 100)
     keychain.display_keys()
     while True:
         print("(d)isplay keychain (a)dd key (r)emove key (s)ave Keychain       (q)uit")
@@ -46,6 +46,9 @@ def main():
 
 if __name__ == "__main__":
     keychain = Keychain()
+    # keychain.add_key("Google", "dn52002@gmail.com", password_generator(20))
+    # keychain.add_key("Bank of America", "dn52002@gmail.com", password_generator(20))
+    # keychain.add_key("Fidelity", "dn52002@gmail.com", password_generator(20))
     if authenticate(keychain):
         main()
 
@@ -54,9 +57,7 @@ if __name__ == "__main__":
 
 
 
-# keychain1.add_key("Google", "dn52002@gmail.com", password_generator(20))
-# keychain1.add_key("Bank of America", "dn52002@gmail.com", password_generator(20))
-# keychain1.add_key("Fidelity", "dn52002@gmail.com", password_generator(20))
+
 
 # main_loop(keychain1)
 # keychain1.display_key_list()

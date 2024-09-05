@@ -1,7 +1,7 @@
 # import pickle
 #
 # # Data to be pickled
-# data = {'name': 'Alice', 'age': 30, 'city': 'New York'}
+# data = {'name': 'John', 'age': 30, 'city': 'New York'}
 #
 # # Save the data to a file
 # with open('data.pkl', 'wb') as file:

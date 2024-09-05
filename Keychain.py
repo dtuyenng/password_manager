@@ -6,7 +6,7 @@ from encryption import encrypt, decrypt
 
 class Keychain:
     def __init__(self):
-        self.password = ""
+        self.password = "123"
         self.key_list = []
         self.next_id = 0
         self.load_keychain()
@@ -27,17 +27,24 @@ class Keychain:
 
     def load_keychain(self):
         self.remove_allkeys() #clear from all keys
+
         with open("data.bin", "rb") as file:
-            data = pickle.load(file) #add decrypt here
-        self.password = data["password"]
-        for key in data["key_list"]:
+            data = pickle.load(file)
+
+        decrypted_data = decrypt(data).decode("utf-8")  # decrypt data, then decode bytes into original json str
+        data_list = json.loads(decrypted_data)          # convert json str to list
+
+        self.password = data_list["password"]
+        for key in data_list["key_list"]:
             self.add_key(key["label"], key["username"], key["password"])
 
-
+    # The data is first converted into a dict, then serialized as a JSON
+    # then encoded. It is then encrypted and stored
     def save_keychain(self):
+        data = json.dumps(self.to_dict()).encode("utf-8")
+        encrypted_data = encrypt(data)
         with open("data.bin", "wb") as file:
-            pickle.dump(self.to_dict(), file)
-        # self.display_key_list
+            pickle.dump(encrypted_data, file)
 
     def display_keys(self):
         print("Registered Keys:")
@@ -46,6 +53,7 @@ class Keychain:
 
     def add_key(self, label, username, password):
         new_key = Key(self.next_id, label, username, password)
+        len(self.key_list)
         self.next_id += 1
         self.key_list.append(new_key)
 
