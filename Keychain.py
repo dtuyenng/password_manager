@@ -8,7 +8,6 @@ class Keychain:
     def __init__(self):
         self.password = "123"
         self.key_list = []
-        self.next_id = 0
         self.load_keychain()
 
     # Convert the class object to a dictionary but since the class has a
@@ -52,9 +51,8 @@ class Keychain:
             print(f"ID:{key.id}   Label: {key.label}  |   Username: {key.username}    |    Password: {key.password}")
 
     def add_key(self, label, username, password):
-        new_key = Key(self.next_id, label, username, password)
-        len(self.key_list)
-        self.next_id += 1
+        new_index = len(self.key_list) + 1
+        new_key = Key(new_index, label, username, password)
         self.key_list.append(new_key)
 
     def remove_key(self, id):
