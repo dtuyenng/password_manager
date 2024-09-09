@@ -8,24 +8,6 @@ from tkinter import ttk
 from tkinter import messagebox
 
 
-# def main_loop(user):
-#     commands = {
-#         'd': user.print_key_list,
-#         'a': lambda: user.add_key(input("Enter username: "), input("Enter password: ")),
-#         'r': lambda: user.remove_key(input("Enter username to remove: ")),
-#         'm': lambda: user.modify_key(input("Enter username to modify: "), input("Enter new password: "))
-#     }
-#
-#     user_input = ""
-#     while user_input != "q":
-#         print("Enter input: (d)isplay keychain  (a)dd key  (r)emove key  (m)odify key  (q)uit")
-#         user_input = input(">").lower()
-#
-#         if user_input in commands:
-#             commands[user_input]()
-#         elif user_input != "q":
-#             print("Invalid input. Please try again.")
-
 def main():
     # print("\n" * 100)
     keychain.display_keys()
@@ -47,13 +29,6 @@ def main():
             break
 
 
-# if __name__ == "__main__":
-#     keychain = Keychain()
-#     # keychain.add_key("Google", "dn52002@gmail.com", password_generator(20))
-#     # keychain.add_key("Bank of America", "dn52002@gmail.com", password_generator(20))
-#     # keychain.add_key("Fidelity", "dn52002@gmail.com", password_generator(20))
-#     if authenticate(keychain):
-#         main()
 
 keychain = Keychain()
 
@@ -82,6 +57,16 @@ def open_add_key_popup():
     # Create a frame inside the pop-up
     popup_frame = tk.Frame(popup)
     popup_frame.pack(padx=10, pady=10)
+
+    # Add labels
+    popup_label = tk.Label(popup_frame, text="Label")
+    popup_label.pack(padx=10, pady=10)
+    popup_username = tk.Label(popup_frame, text="Username")
+    popup_username.pack(padx=10, pady=10)
+    popup_password = tk.Label(popup_frame, text="Password")
+    popup_password.pack(padx=10, pady=10)
+
+
 
     # Add entries inside the frame
     label_entry = ttk.Entry(popup_frame, textvariable=label_variable)
@@ -169,6 +154,31 @@ window.mainloop()
 
 
 
+# def main_loop(user):
+#     commands = {
+#         'd': user.print_key_list,
+#         'a': lambda: user.add_key(input("Enter username: "), input("Enter password: ")),
+#         'r': lambda: user.remove_key(input("Enter username to remove: ")),
+#         'm': lambda: user.modify_key(input("Enter username to modify: "), input("Enter new password: "))
+#     }
+#
+#     user_input = ""
+#     while user_input != "q":
+#         print("Enter input: (d)isplay keychain  (a)dd key  (r)emove key  (m)odify key  (q)uit")
+#         user_input = input(">").lower()
+#
+#         if user_input in commands:
+#             commands[user_input]()
+#         elif user_input != "q":
+#             print("Invalid input. Please try again.")
 
 
 
+
+# if __name__ == "__main__":
+#     keychain = Keychain()
+#     # keychain.add_key("Google", "dn52002@gmail.com", password_generator(20))
+#     # keychain.add_key("Bank of America", "dn52002@gmail.com", password_generator(20))
+#     # keychain.add_key("Fidelity", "dn52002@gmail.com", password_generator(20))
+#     if authenticate(keychain):
+#         main()
