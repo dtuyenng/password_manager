@@ -38,8 +38,8 @@ def open_add_key_popup():
     popup.title("Custom Pop-up")
 
     # Set the size of the pop-up window
-    popup_width = 300
-    popup_height = 200
+    popup_width = 450
+    popup_height = 300
 
     # Get main window size and position
     main_window_width = window.winfo_width()
@@ -54,33 +54,39 @@ def open_add_key_popup():
     # Set the geometry of the pop-up window
     popup.geometry(f"{popup_width}x{popup_height}+{position_x}+{position_y}")
 
+
+
     # Create a frame inside the pop-up
     popup_frame = tk.Frame(popup)
-    popup_frame.pack(padx=10, pady=10)
+    popup_frame.pack()
 
-    # Add labels
-    popup_label = tk.Label(popup_frame, text="Label")
-    popup_label.pack(padx=10, pady=10)
-    popup_username = tk.Label(popup_frame, text="Username")
-    popup_username.pack(padx=10, pady=10)
-    popup_password = tk.Label(popup_frame, text="Password")
-    popup_password.pack(padx=10, pady=10)
+    # Configure columns to make sure they expand properly
+    popup_frame.grid_columnconfigure(0, weight=1)
+    popup_frame.grid_columnconfigure(1, weight=1)
 
-
-
-    # Add entries inside the frame
+    # Add widgets
+    label_popup_label = tk.Label(popup_frame, text="Label")
+    label_popup_label.grid(row=0, column=1, sticky="E")
     label_entry = ttk.Entry(popup_frame, textvariable=label_variable)
-    label_entry.pack()
+    label_entry.insert(0, "enter name)")
+    label_entry.grid(row=1, column=1, columnspan=2, sticky="W")
+
+    label_popup_username = tk.Label(popup_frame, text="Username")
+    label_popup_username.grid(row=3, column=0, sticky="E")
     username_entry = ttk.Entry(popup_frame, textvariable=username_variable)
-    username_entry.pack()
+    username_entry.grid(row=4, column=0, sticky="E")
+
+
+    label_popup_password = tk.Label(popup_frame, text="Password")
+    label_popup_password.grid(row=3, column=1, sticky="E")
     password_entry = ttk.Entry(popup_frame, textvariable=password_variable)
-    password_entry.pack()
+    password_entry.grid(row=4, column=1, sticky="E")
 
     # Add buttons
     add_button_popup = ttk.Button(popup_frame, text="Add Key", command= lambda: add_key_button_event(popup))
-    add_button_popup.pack()
-    close_button = ttk.Button(popup_frame, text="Cancel", command=popup.destroy)
-    close_button.pack(pady=10)
+    add_button_popup.grid(row=5, column=0, sticky="E")
+    cancel_button = ttk.Button(popup_frame, text="Cancel", command=popup.destroy)
+    cancel_button.grid(row=5, column=1, sticky="E")
 
 def load_keys_on_startup():
     for key in keychain.key_list:
@@ -144,6 +150,8 @@ delete_button = ttk.Button(frame2, text="Delete Key", command=lambda: print("Key
 delete_button.pack(side="left")
 
 load_keys_on_startup()
+open_add_key_popup()
+
 
 window.mainloop()
 
