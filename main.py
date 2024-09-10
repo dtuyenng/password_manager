@@ -35,7 +35,7 @@ keychain = Keychain()
 def open_add_key_popup():
     """Opens a custom pop-up window centered within the main window."""
     popup = tk.Toplevel(window)  # Make the pop-up window a child of the main window
-    popup.title("Custom Pop-up")
+    popup.title("Add Key")
 
     # Set the size of the pop-up window
     popup_width = 450
@@ -68,14 +68,13 @@ def open_add_key_popup():
     label_popup_label = tk.Label(popup_frame, text="Label")
     label_popup_label.grid(row=0, column=1, sticky="E")
     label_entry = ttk.Entry(popup_frame, textvariable=label_variable)
-    label_entry.insert(0, "enter name)")
-    label_entry.grid(row=1, column=1, columnspan=2, sticky="W")
+    # label_entry.insert(0, "enter name)")
+    label_entry.grid(row=1, column=0, columnspan=2, sticky="WE")
 
     label_popup_username = tk.Label(popup_frame, text="Username")
     label_popup_username.grid(row=3, column=0, sticky="E")
     username_entry = ttk.Entry(popup_frame, textvariable=username_variable)
     username_entry.grid(row=4, column=0, sticky="E")
-
 
     label_popup_password = tk.Label(popup_frame, text="Password")
     label_popup_password.grid(row=3, column=1, sticky="E")
@@ -84,9 +83,11 @@ def open_add_key_popup():
 
     # Add buttons
     add_button_popup = ttk.Button(popup_frame, text="Add Key", command= lambda: add_key_button_event(popup))
-    add_button_popup.grid(row=5, column=0, sticky="E")
+    add_button_popup.grid(row=6, column=0, sticky="WE")
     cancel_button = ttk.Button(popup_frame, text="Cancel", command=popup.destroy)
-    cancel_button.grid(row=5, column=1, sticky="E")
+    cancel_button.grid(row=6, column=1, sticky="WE")
+    generate_password_button = ttk.Button(popup_frame, text="Generate Random", width=2, command=lambda: password_variable.set(password_generator(20)))
+    generate_password_button.grid(row=5, column=1, sticky="NSEW")
 
 def load_keys_on_startup():
     for key in keychain.key_list:
@@ -111,49 +112,42 @@ def add_key_button_event(popup):
 
 window = tk.Tk()
 window.title("My Password Manager")
-window.geometry("600x500")
+window.geometry("800x500")
 
-password_table = ttk.Treeview(window, columns=("id", "Label", "Username", "Password"), show="headings")
+password_table = ttk.Treeview(window, columns=("id", "label", "username", "password"), show="headings")
 password_table.heading("id", text="id")
-password_table.heading("Label", text="Label")
-password_table.heading("Username", text="username")
-password_table.heading("Password", text="password")
+password_table.heading("label", text="Label")
+password_table.heading("username", text="username")
+password_table.heading("password", text="password")
 password_table.pack()
 
-frame3 = tk.Frame(window)
-frame3.pack()
-label_label = tk.Label(frame3, text="Label")
-label_label.pack(side="left")
-label_username = tk.Label(frame3, text="Username")
-label_username.pack(side="left")
-label_password = tk.Label(frame3, text="Password")
-label_password.pack(side="left")
+#column widths
 
-frame1 = tk.Frame(window)
-frame1.pack()
+password_table.column("id", width=30)
+password_table.column("label", width=280)
+password_table.column("username", width=250)
+password_table.column("password", width=250)
 
 # App Variables
 label_variable = tk.StringVar()
 username_variable = tk.StringVar()
 password_variable = tk.StringVar()
 
-frame2 = tk.Frame(window)
-frame2.pack()
-add_button = ttk.Button(frame2, text="Add Key", command=open_add_key_popup)
-add_button.pack(side="left")
+add_button = ttk.Button(window, text="Add Key", command=open_add_key_popup)
+add_button.pack(pady=20)
 
-edit_button = ttk.Button(frame2, text="Edit Key", command=lambda: print("Key Edited"))
-edit_button.pack(side="left")
-
-
-delete_button = ttk.Button(frame2, text="Delete Key", command=lambda: print("Key Deleted"))
-delete_button.pack(side="left")
+# edit_button = ttk.Button(frame2, text="Edit Key", command=lambda: print("Key Edited"))
+# edit_button.pack(side="left")
+#
+# delete_button = ttk.Button(frame2, text="Delete Key", command=lambda: print("Key Deleted"))
+# delete_button.pack(side="left")
 
 load_keys_on_startup()
-open_add_key_popup()
-
-
+# open_add_key_popup()
 window.mainloop()
+
+keychain.save_keychain() #Save keychain when app quits
+
 
 
 

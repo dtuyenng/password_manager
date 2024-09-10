@@ -44,6 +44,7 @@ class Keychain:
         encrypted_data = encrypt(data)
         with open("data.bin", "wb") as file:
             pickle.dump(encrypted_data, file)
+        print("Keychain saved to local storage.")
 
     def display_keys(self):
         print("Registered Keys:")
