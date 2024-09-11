@@ -4,8 +4,19 @@ from password_generator import password_generator
 from authenticate import authenticate
 import json
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, StringVar
 from tkinter import messagebox
+
+"""
+
+TODO:
+    - Add copy function
+    - scrollable treeview
+    - make frame size static
+    - create menu
+    - convert and load from json in menu
+
+"""
 
 
 def main():
@@ -35,7 +46,7 @@ keychain = Keychain()
 def edit_key_popup():
     """Opens a custom pop-up window centered within the main window."""
     popup = tk.Toplevel(window)  # Make the pop-up window a child of the main window
-    popup.title("Add Key")
+    popup.title("Edit Key")
 
     # Set the size of the pop-up window
     popup_width = 450
@@ -74,19 +85,25 @@ def edit_key_popup():
     label_popup_label = tk.Label(popup_frame, text="Label")
     label_popup_label.grid(row=0, column=1, sticky="E")
     label_entry = ttk.Entry(popup_frame, textvariable=label_variable)
+    label_entry.delete(0, tk.END)  #first delete then insert or it will show double
     label_entry.insert(0, label_variable)
+    label_entry.config(state='readonly')
     label_entry.grid(row=1, column=0, columnspan=2, sticky="WE")
 
     label_popup_username = tk.Label(popup_frame, text="Username")
     label_popup_username.grid(row=3, column=0, sticky="E")
     username_entry = ttk.Entry(popup_frame, textvariable=username_variable)
+    username_entry.delete(0, tk.END)
     username_entry.insert(0, username_variable)
+    username_entry.config(state='readonly')
     username_entry.grid(row=4, column=0, sticky="E")
 
     label_popup_password = tk.Label(popup_frame, text="Password")
     label_popup_password.grid(row=3, column=1, sticky="E")
     password_entry = ttk.Entry(popup_frame, textvariable=password_variable)
+    password_entry.delete(0, tk.END)
     password_entry.insert(0, password_variable)
+    password_entry.config(state='readonly')
     password_entry.grid(row=4, column=1, sticky="E")
 
 
@@ -207,28 +224,22 @@ username_variable = tk.StringVar()
 password_variable = tk.StringVar()
 
 delete_button = ttk.Button(window, text="Delete", command=delete_key_event)
-delete_button.pack(side="right", pady=20)
+delete_button.pack(side="right", padx=20)
 
 edit_button = ttk.Button(window, text="Edit", command=edit_key_popup)
-edit_button.pack(side="right", pady=20)
+edit_button.pack(side="right", padx=20)
 
 add_button = ttk.Button(window, text="Add", command=add_key_popup)
-add_button.pack(side="right", pady=20)
+add_button.pack(side="right",  padx=20)
 
 
-debug_label = ttk.Label(window, text=f"{label_variable}")
-debug_label.pack()
-print_key = ttk.Button(window, text="Print Keys", command=print_keychain)
-print_key.pack(side="right", pady=20)
+# debug_label = ttk.Label(window, text=f"{label_variable}")
+# debug_label.pack()
+# print_key = ttk.Button(window, text="Print Keys", command=print_keychain)
+# print_key.pack(side="right", pady=20)
 
-# edit_button = ttk.Button(frame2, text="Edit Key", command=lambda: print("Key Edited"))
-# edit_button.pack(side="left")
-#
-# delete_button = ttk.Button(frame2, text="Delete Key", command=lambda: print("Key Deleted"))
-# delete_button.pack(side="left")
 
 load_keys_on_startup()
-# add_key_popup()
 window.mainloop()
 
 # keychain.save_keychain() #Save keychain when app quits

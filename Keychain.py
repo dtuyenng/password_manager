@@ -60,7 +60,8 @@ class Keychain:
         for key in self.key_list:
             if key.id == id:
                 self.key_list.remove(key)
-        print(f"Key {key.label} {key.username} removed successfully.")
+                print(f"Key {key.label} {key.username} removed successfully.")
+
 
     def remove_allkeys(self):
         self.key_list = []
