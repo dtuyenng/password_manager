@@ -58,25 +58,38 @@ def edit_key_popup():
     popup_frame = tk.Frame(popup)
     popup_frame.pack()
 
+    # Setting up data needed
+    # Get the selected row's Iid
+    edited_key = password_table.selection()[0]
+
+    # Get the values of the selected row
+    # item_value returns ('6', 'Google', 'neyuttad@gmail.com', 't1^1Cg78pV%EJhi69m-k')
+    item_values = password_table.item(edited_key, 'values')
+    label_variable = item_values[1]
+    username_variable = item_values[2]
+    password_variable = item_values[3]
+
+
     # Add widgets
     label_popup_label = tk.Label(popup_frame, text="Label")
     label_popup_label.grid(row=0, column=1, sticky="E")
     label_entry = ttk.Entry(popup_frame, textvariable=label_variable)
-    # label_entry.insert(0, "enter name)")
+    label_entry.insert(0, label_variable)
     label_entry.grid(row=1, column=0, columnspan=2, sticky="WE")
 
     label_popup_username = tk.Label(popup_frame, text="Username")
     label_popup_username.grid(row=3, column=0, sticky="E")
     username_entry = ttk.Entry(popup_frame, textvariable=username_variable)
+    username_entry.insert(0, username_variable)
     username_entry.grid(row=4, column=0, sticky="E")
 
     label_popup_password = tk.Label(popup_frame, text="Password")
     label_popup_password.grid(row=3, column=1, sticky="E")
     password_entry = ttk.Entry(popup_frame, textvariable=password_variable)
+    password_entry.insert(0, password_variable)
     password_entry.grid(row=4, column=1, sticky="E")
 
-    edited_key = password_table.selection()[0]
-    print(edited_key)
+
 
 def add_key_popup():
     """Opens a custom pop-up window centered within the main window."""
@@ -156,7 +169,19 @@ def add_key_button_event(popup):
 
 def delete_key_event():
     deleted_key = password_table.selection()[0]
+    # deleted_key_values returns ('6', 'Google', 'neyuttad@gmail.com', 't1^1Cg78pV%EJhi69m-k')
+    deleted_key_values = password_table.item(deleted_key, 'values')
+
+    # remove key from treeview
     password_table.delete(deleted_key)
+
+    #remove key from keychain key_list
+    keychain.remove_key(int(deleted_key_values[0]))
+
+def print_keychain():
+    print("\n")
+    for key in keychain.key_list:
+        print(key.id, key.label, key.username, key.password)
 
 window = tk.Tk()
 window.title("My Password Manager")
@@ -191,6 +216,10 @@ add_button = ttk.Button(window, text="Add", command=add_key_popup)
 add_button.pack(side="right", pady=20)
 
 
+debug_label = ttk.Label(window, text=f"{label_variable}")
+debug_label.pack()
+print_key = ttk.Button(window, text="Print Keys", command=print_keychain)
+print_key.pack(side="right", pady=20)
 
 # edit_button = ttk.Button(frame2, text="Edit Key", command=lambda: print("Key Edited"))
 # edit_button.pack(side="left")
@@ -202,33 +231,9 @@ load_keys_on_startup()
 # add_key_popup()
 window.mainloop()
 
-keychain.save_keychain() #Save keychain when app quits
+# keychain.save_keychain() #Save keychain when app quits
 
 
-
-
-
-
-
-
-
-# def main_loop(user):
-#     commands = {
-#         'd': user.print_key_list,
-#         'a': lambda: user.add_key(input("Enter username: "), input("Enter password: ")),
-#         'r': lambda: user.remove_key(input("Enter username to remove: ")),
-#         'm': lambda: user.modify_key(input("Enter username to modify: "), input("Enter new password: "))
-#     }
-#
-#     user_input = ""
-#     while user_input != "q":
-#         print("Enter input: (d)isplay keychain  (a)dd key  (r)emove key  (m)odify key  (q)uit")
-#         user_input = input(">").lower()
-#
-#         if user_input in commands:
-#             commands[user_input]()
-#         elif user_input != "q":
-#             print("Invalid input. Please try again.")
 
 
 
