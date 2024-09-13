@@ -201,7 +201,7 @@ window = tk.Tk()
 window.title("My Password Manager")
 
 center_window(window, 800, 500)
-# window.resizable(False, False)
+window.resizable(False, False)
 
 
 main_frame = tk.Frame(window)
@@ -214,7 +214,7 @@ scroll_bar.grid(row=0, column=1, sticky="NS")
 password_table = ttk.Treeview(main_frame, yscrollcommand= scroll_bar.set ,
                               # columns=("id", "label", "username", "password"),
                               columns=("id", "label", "username", "password"),
-                              show="headings", height=5)
+                              show="headings", height=20)
 password_table.grid(row=0, column=0, sticky="NSEW")
 
 scroll_bar.config(command=password_table.yview)
@@ -257,11 +257,6 @@ load_keys_on_startup()
 window.mainloop()
 
 # keychain.save_keychain() #Save keychain when app quits
-
-
-
-
-
 
 # if __name__ == "__main__":
 #     keychain = Keychain()
