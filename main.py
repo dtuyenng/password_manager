@@ -11,17 +11,17 @@ from tkinter import messagebox
 
 TODO:
     - Add copy function
-    - scrollable treeview (done)
-    - make frame size static (done)
-    - create menu
     - convert and load from json in menu
+    - add a status message above button to notify user of various events such as
+    saving, deleting, updating
+    - add two inputs for password setting
+    - after password is set, don't jsut destroy. make add button and input go away, and add a close button
+    with a message that says it's ok to close
+    - stylize edit key to be the same as add key
     
 Bugs:
-    - When no item is selected (i.e during start up) and user presses edit, we get IndexError
-    - Scrollbar doesn't have little arrows
 
 """
-
 
 def main():
     # print("\n" * 100)
@@ -44,6 +44,7 @@ def main():
             break
 
 keychain = Keychain()
+
 
 def center_window(window, width, height):
     """Center the window on the screen."""
@@ -70,49 +71,106 @@ def center_window(window, width, height):
 #     # Set the geometry of the pop-up window
 #     popup.geometry(f"{width}x{height}+{x}+{y}")
 
-
-def edit_key_popup():
-    popup = tk.Toplevel(window)  # Make the pop-up window a child of the main window
-    popup.title("Edit Key")
+def error_window_popup(error):
+    popup = tk.Toplevel(window)
+    popup.title("Error")
     popup.resizable(False, False)
 
-    # Set the size of the pop-up window
-    width = 350
-    height = 300
+    width = 450
+    height = 100
 
     # Center the pop-up window
     center_window(popup, width, height)
 
-    # Create a frame inside the pop-up
-    popup_frame = tk.Frame(popup)
-    popup_frame.pack(padx=10, pady=10, fill="x")
+    label = ttk.Label(popup, text=error)
+    label.pack(side="top", expand=True)
 
-    # Setting up data needed
-    edited_key = password_table.selection()[0]
-    item_values = password_table.item(edited_key, 'values')
+def menu_edit_password():
+    passwordVar = tk.StringVar()
+    warning_msg = tk.StringVar()
 
-    popup_label_variable = item_values[1]
-    popup_username_variable = item_values[2]
-    popup_password_variable = item_values[3]
+    def set_password():
+        if passwordVar.get() == "" :
+            warning_msg.set("Please enter a password")
+        else:
+            keychain.set_password(passwordVar.get())
+            print(keychain.password)
+            warning_msg.set("Password Set!")
+            keychain.save_keychain()
+            popup.destroy()
 
-    # Add widgets
-    tk.Label(popup_frame, text="Label").grid(row=0, column=0, sticky="E")
-    label_entry = ttk.Entry(popup_frame)
-    label_entry.insert(0, popup_label_variable)
-    label_entry.config(state='readonly')
-    label_entry.grid(row=0, column=1, sticky="WE", padx=5, pady=5)
+    popup = tk.Toplevel(window)  # Make the pop-up window a child of the main window
+    popup.title("Set Keychain Password")
+    popup.resizable(False, False)
 
-    tk.Label(popup_frame, text="Username").grid(row=1, column=0, sticky="E")
-    username_entry = ttk.Entry(popup_frame)
-    username_entry.insert(0, popup_username_variable)
-    username_entry.config(state='readonly')
-    username_entry.grid(row=1, column=1, sticky="WE", padx=5, pady=5)
+    # Set the size of the pop-up window
+    width = 350
+    height = 100
 
-    tk.Label(popup_frame, text="Password").grid(row=2, column=0, sticky="E")
-    password_entry = ttk.Entry(popup_frame)
-    password_entry.insert(0, popup_password_variable)
-    password_entry.config(state='readonly')
-    password_entry.grid(row=2, column=1, sticky="WE", padx=5, pady=5)
+    # Centering window function
+    center_window(popup, width, height)
+
+    label = ttk.Label(popup, text="Enter Password")
+    label.pack(side="top", expand=True)
+
+    input = ttk.Entry(popup, textvariable=passwordVar, justify="center")
+    input.pack(side="top", expand=True)
+
+    label_error_warning = ttk.Label(popup, textvariable=warning_msg)
+    label_error_warning.pack(side="top", expand=True)
+
+    set_button = ttk.Button(popup, text="Set Password", command=set_password)
+    set_button.pack(side="top", expand=True)
+
+def edit_key_popup():
+
+    try:
+        # Setting up data needed. This will fail if nothing is selected
+        edited_key = password_table.selection()[0]
+        item_values = password_table.item(edited_key, 'values')
+
+        popup = tk.Toplevel(window)  # Make the pop-up window a child of the main window
+        popup.title("Edit Key")
+        popup.resizable(False, False)
+
+        # Set the size of the pop-up window
+        width = 350
+        height = 300
+
+        # Center the pop-up window
+        center_window(popup, width, height)
+
+        # Create a frame inside the pop-up
+        popup_frame = tk.Frame(popup)
+        popup_frame.pack(padx=10, pady=10, fill="x")
+
+        popup_label_variable = item_values[1]
+        popup_username_variable = item_values[2]
+        popup_password_variable = item_values[3]
+
+        # Add widgets
+        tk.Label(popup_frame, text="Label").grid(row=0, column=0, sticky="E")
+        label_entry = ttk.Entry(popup_frame)
+        label_entry.insert(0, popup_label_variable)
+        label_entry.config(state='readonly')
+        label_entry.grid(row=0, column=1, sticky="WE", padx=5, pady=5)
+
+        tk.Label(popup_frame, text="Username").grid(row=1, column=0, sticky="E")
+        username_entry = ttk.Entry(popup_frame)
+        username_entry.insert(0, popup_username_variable)
+        username_entry.config(state='readonly')
+        username_entry.grid(row=1, column=1, sticky="WE", padx=5, pady=5)
+
+        tk.Label(popup_frame, text="Password").grid(row=2, column=0, sticky="E")
+        password_entry = ttk.Entry(popup_frame)
+        password_entry.insert(0, popup_password_variable)
+        password_entry.config(state='readonly')
+        password_entry.grid(row=2, column=1, sticky="WE", padx=5, pady=5)
+
+    except IndexError:
+        error_msg = "No key selected. Please select a key(row) to edit"
+        error_window_popup(error_msg)
+        print(error_msg)
 
 
 def add_key_popup():
@@ -131,24 +189,24 @@ def add_key_popup():
     popup_frame = tk.Frame(popup)
     popup_frame.pack()
 
-    # Configure columns to make sure they expand properly
-    popup_frame.grid_columnconfigure(0, weight=1)
-    popup_frame.grid_columnconfigure(1, weight=1)
+    # # Configure columns to make sure they expand properly
+    # popup_frame.grid_columnconfigure(0, weight=1)
+    # popup_frame.grid_columnconfigure(1, weight=1)
 
     # Add widgets
     label_popup_label = tk.Label(popup_frame, text="Label")
-    label_popup_label.grid(row=0, column=1, sticky="E")
+    label_popup_label.grid(row=0, column=0, columnspan=2, sticky="EW")
     label_entry = ttk.Entry(popup_frame, textvariable=label_variable)
     # label_entry.insert(0, "enter name)")
-    label_entry.grid(row=1, column=0, columnspan=2, sticky="WE")
+    label_entry.grid(row=1, column=0, columnspan=2, sticky="EW")
 
     label_popup_username = tk.Label(popup_frame, text="Username")
-    label_popup_username.grid(row=3, column=0, sticky="E")
+    label_popup_username.grid(row=3, column=0, sticky="EW")
     username_entry = ttk.Entry(popup_frame, textvariable=username_variable)
     username_entry.grid(row=4, column=0, sticky="E")
 
     label_popup_password = tk.Label(popup_frame, text="Password")
-    label_popup_password.grid(row=3, column=1, sticky="E")
+    label_popup_password.grid(row=3, column=1, sticky="EW")
     password_entry = ttk.Entry(popup_frame, textvariable=password_variable)
     password_entry.grid(row=4, column=1, sticky="E")
 
@@ -179,18 +237,23 @@ def add_key_button_event(popup):
         password_table.insert("", "end", values=(new_key.id, new_key.label, new_key.username, new_key.password))
         popup.destroy()
     else:
-        print("Please fill in the label and username fields.")
+        error_msg = "Please fill all required field"
+        error_window_popup(error_msg)
 
 def delete_key_event():
-    deleted_key = password_table.selection()[0]
-    # deleted_key_values returns ('6', 'Google', 'neyuttad@gmail.com', 't1^1Cg78pV%EJhi69m-k')
-    deleted_key_values = password_table.item(deleted_key, 'values')
+    try:
+        deleted_key = password_table.selection()[0]
+        deleted_key_values = password_table.item(deleted_key, 'values')
 
-    # remove key from treeview
-    password_table.delete(deleted_key)
+        # remove key from treeview
+        password_table.delete(deleted_key)
 
-    #remove key from keychain key_list
-    keychain.remove_key(int(deleted_key_values[0]))
+        # remove key from keychain key_list
+        keychain.remove_key(int(deleted_key_values[0]))
+    except IndexError:
+        error_msg = "No key selected. Please select a key(row) to delete"
+        error_window_popup(error_msg)
+        print(error_msg)
 
 def print_keychain():
     print("\n")
@@ -202,6 +265,33 @@ window.title("My Password Manager")
 
 center_window(window, 800, 500)
 window.resizable(False, False)
+
+def menu_import_keychain():
+    pass
+
+def menu_export_keychain():
+    pass
+
+
+# Create Menu Bar
+menu = tk.Menu(window)
+window.config(menu=menu)
+
+#Create Menu Items
+
+file_menu = tk.Menu(menu)
+menu.add_cascade(label="File", menu=file_menu)
+file_menu.add_command(label="Import Keychain", command = menu_import_keychain)
+file_menu.add_command(label="Export Keychain...", command = menu_export_keychain)
+file_menu.add_separator()
+file_menu.add_command(label="Set Password...", command = menu_edit_password)
+file_menu.add_separator()
+file_menu.add_command(label="Quit Password Manager", command = window.quit)
+
+# about_menu = tk.Menu(menu)
+# menu.add_cascade(label="Password Manager", menu=about_menu)
+# about_menu.add_command(label="About Password Manager", command=menu_about)
+# about_menu.add_command(label="Help", command=menu_about)
 
 
 main_frame = tk.Frame(window)
@@ -237,14 +327,18 @@ label_variable = tk.StringVar()
 username_variable = tk.StringVar()
 password_variable = tk.StringVar()
 
-delete_button = ttk.Button(window, text="Delete", command=delete_key_event)
-delete_button.pack(side="right", padx=20)
+#Setting bottom buttons inside a frame and center it
+bottom_frame = tk.Frame(window)
+bottom_frame.pack()
 
-edit_button = ttk.Button(window, text="Edit", command=edit_key_popup)
-edit_button.pack(side="right", padx=20)
+delete_button = ttk.Button(bottom_frame, text="Delete", command=delete_key_event)
+delete_button.pack(side="right", padx=10)
 
-add_button = ttk.Button(window, text="Add", command=add_key_popup)
-add_button.pack(side="right",  padx=20)
+edit_button = ttk.Button(bottom_frame, text="Edit", command=edit_key_popup)
+edit_button.pack(side="right", padx=10)
+
+add_button = ttk.Button(bottom_frame, text="Add", command=add_key_popup)
+add_button.pack(side="right",  padx=10)
 
 
 # debug_label = ttk.Label(window, text=f"{label_variable}")
@@ -255,8 +349,7 @@ add_button.pack(side="right",  padx=20)
 
 load_keys_on_startup()
 window.mainloop()
-
-# keychain.save_keychain() #Save keychain when app quits
+keychain.save_keychain() #Save keychain when app quits
 
 # if __name__ == "__main__":
 #     keychain = Keychain()

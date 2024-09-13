@@ -2,19 +2,26 @@ import json
 import uuid
 from password_generator import password_generator
 import pickle
-from encryption import encrypt, decrypt
+from encryption import encrypt, decrypt, password
+
 
 class Keychain:
     def __init__(self):
-        self.password = "123"
+        self.__password = "123" #private variable
         self.key_list = []
         self.load_keychain()
+
+    def set_password(self, password):
+        self.__password = password
+
+    def get_password(self):
+        return self.__password
+
 
     # Convert the class object to a dictionary but since the class has a
     # key_list which itself has objects in it, we need to first iterate through
     # them and use their own to_dict method to convert to a dictionary
     # We then return the dictionary
-
     def to_dict(self) -> dict:
         key_list_dict= []
         for key_obj in self.key_list:
