@@ -74,9 +74,11 @@ class Keychain:
         self.key_list = []
 
     def modify_key(self, id, label, username, password):
-        self.key_list[id].label = label
-        self.key_list[id].username = username
-        self.key_list[id].password = password
+        print(f"Debug: {self.key_list}")
+        # key is minus 1 to match data in treeview
+        self.key_list[id-1].label = label
+        self.key_list[id-1].username = username
+        self.key_list[id-1].password = password
         self.save_keychain()
         print("Key Updated successfully.")
 

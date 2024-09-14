@@ -39,6 +39,15 @@ def main():
 
 keychain = Keychain()
 
+def reload_treeview(treeview):
+    current_data = [treeview.item(item)["values"] for item in treeview.get_children()]
+
+    for item in treeview.get_children():
+        treeview.delete(item)
+
+    for row in current_data:
+        treeview.insert("", tk.END, values=row)
+
 def center_window(window, width, height):
     """Center the window on the screen."""
     # Get the screen width and height
@@ -114,19 +123,25 @@ def edit_key_event():
 
 def edit_key_popup():
 
+    """
+    Strange bug issue, the StringVar varibles won't display in entry unless one of the button calls their
+    get() methods in the command: parameters
+
+    """
+
+
     try:
         # Setting up data needed. This will fail if nothing is selected
         edited_key = password_table.selection()[0]
         item_values = password_table.item(edited_key, 'values')
-        print(item_values[0])
 
         popup = tk.Toplevel(window)  # Make the pop-up window a child of the main window
         popup.title("Edit Key")
         popup.resizable(False, False)
 
         # Set the size of the pop-up window
-        width = 500
-        height = 250
+        width = 600
+        height = 350
 
         # Center the pop-up window
         center_window(popup, width, height)
@@ -135,53 +150,67 @@ def edit_key_popup():
         popup_frame = tk.Frame(popup)
         popup_frame.pack(pady=20)
 
-        # popup_label_variable = item_values[1]
-        # popup_username_variable = item_values[2]
-        # popup_password_variable = item_values[3]
-
+        new_id = int(item_values[0])
         popup_label_variable = tk.StringVar(value=item_values[1])
-        print(item_values[2])
         popup_username_variable = tk.StringVar(value=item_values[2])
         popup_password_variable = tk.StringVar(value=item_values[3])
+
+        def keychain_password_update():
+            # Note: for some reasons, without these prints, the StringVars don't display properly
+            print(f"id: {new_id}")
+            print(f"Label: {popup_label_variable.get()}")
+            print(f"Username: {popup_username_variable.get()}")
+            print(f"Password: {popup_password_variable.get()}")
+
+            result = messagebox.askyesno("Confirm", "Update Password?")
+            if result:
+                keychain.modify_key(id=new_id, label=popup_label_variable.get(), username=popup_username_variable.get(), password=popup_password_variable.get())
+                print("Password has been changed")
+            reload_treeview(password_table)
+            popup.destroy()
+
+        # # Debugging: Check if the variables hold correct values
+        # print(f"Label: {popup_label_variable.get()}")
+        # print(f"Username: {popup_username_variable.get()}")
+        # print(f"Password: {popup_password_variable.get()}")
+
 
         # Add widgets
         label_label = tk.Label(popup_frame, text="Label")
         label_label.grid(row=0, column=0, columnspan=2, sticky="EW")
-        label_entry = ttk.Entry(popup_frame, justify="center")
+        label_entry = ttk.Entry(popup_frame, justify="center", textvariable=popup_label_variable)
         # label_entry.insert(0, popup_label_variable.get())
-        # label_entry.config(state='readonly')
         label_entry.grid(row=1, column=0, columnspan=2, sticky="EW")
+        print(popup_label_variable.get())
 
         username_label = tk.Label(popup_frame, text="Username")
         username_label.grid(row=3, column=0, sticky="EW")
         username_entry = ttk.Entry(popup_frame, justify="center", textvariable=popup_username_variable)
-        username_entry.insert(0, popup_username_variable.get())
-        # username_entry.config(state='readonly')
+        # username_entry.insert(0, popup_username_variable.get())
         username_entry.grid(row=4, column=0, sticky="E")
 
         password_label = tk.Label(popup_frame, text="Password")
         password_label.grid(row=3, column=1, sticky="EW")
-        password_entry = ttk.Entry(popup_frame, justify="center")
+        password_entry = ttk.Entry(popup_frame, justify="center", textvariable=popup_password_variable)
         # password_entry.insert(0, popup_password_variable.get())
-        # password_entry.config(state='readonly')
         password_entry.grid(row=4, column=1, sticky="E")
 
         # Add buttons
-        generate_password_button = ttk.Button(popup_frame, text="Generate Random", width=2, command=lambda: password_variable.set(password_generator(20)))
+        generate_password_button = ttk.Button(popup_frame, text="Generate Random", width=2, command=lambda: popup_password_variable.set(password_generator(20)))
         generate_password_button.grid(row=5, column=1, sticky="NSEW")
 
-        update_button = ttk.Button(popup_frame, text="Update Key", command=lambda: print(popup_username_variable.get()))
+        update_button = ttk.Button(popup_frame, text="Update Key", command=keychain_password_update)
         update_button.grid(row=6, column=0, sticky="WE", pady=20)
 
         cancel_button = ttk.Button(popup_frame, text="Cancel", command=popup.destroy)
         cancel_button.grid(row=6, column=1, sticky="WE", pady=20)
 
 
-
     except IndexError:
         error_msg = "No Key Selected."
         messagebox.showwarning("Attention!", error_msg)
         print(error_msg)
+
 
 def add_key_popup():
 
