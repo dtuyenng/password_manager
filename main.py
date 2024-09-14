@@ -13,40 +13,30 @@ TODO:
     - convert and load from json in menu
     
 Bugs:
-    - having issues with duplicatingS tringVar in update_key
 
 """
 
-def main():
-    # print("\n" * 100)
-    keychain.display_keys()
-    while True:
-        print("(d)isplay keychain (a)dd key (r)emove key (s)ave Keychain       (q)uit")
-        user_input = input(">").lower()
-        if user_input == "d":
-            print("\n" * 100)
-            keychain.display_keys()
-        if user_input == "r":
-            user_input = input("Remove key with ID: ")
-            keychain.remove_key(int(user_input))
-        if user_input == "s":
-            keychain.save_keychain()
-        if user_input == "g":
-            password_generator(20)
-            print("Generated Password: " + password_generator(20))
-        if user_input == "q":
-            break
+# def main(): ####### Text Based Menu
+#     # print("\n" * 100)
+#     keychain.display_keys()
+#     while True:
+#         print("(d)isplay keychain (a)dd key (r)emove key (s)ave Keychain       (q)uit")
+#         user_input = input(">").lower()
+#         if user_input == "d":
+#             print("\n" * 100)
+#             keychain.display_keys()
+#         if user_input == "r":
+#             user_input = input("Remove key with ID: ")
+#             keychain.remove_key(int(user_input))
+#         if user_input == "s":
+#             keychain.save_keychain()
+#         if user_input == "g":
+#             password_generator(20)
+#             print("Generated Password: " + password_generator(20))
+#         if user_input == "q":
+#             break
 
 keychain = Keychain()
-
-def reload_treeview(treeview):
-    current_data = [treeview.item(item)["values"] for item in treeview.get_children()]
-
-    for item in treeview.get_children():
-        treeview.delete(item)
-
-    for row in current_data:
-        treeview.insert("", tk.END, values=row)
 
 def center_window(window, width, height):
     """Center the window on the screen."""
@@ -60,20 +50,6 @@ def center_window(window, width, height):
 
     # Set the window size and position
     window.geometry(f"{width}x{height}+{x}+{y}")
-
-def error_window_popup(error):
-    popup = tk.Toplevel(window)
-    popup.title("Error")
-    popup.resizable(False, False)
-
-    width = 450
-    height = 100
-
-    # Center the pop-up window
-    center_window(popup, width, height)
-
-    label = ttk.Label(popup, text=error)
-    label.pack(side="top", expand=True)
 
 def menu_edit_password():
     passwordVar1 = tk.StringVar()
@@ -118,8 +94,8 @@ def menu_edit_password():
     set_button = ttk.Button(popup, text="Set Password", command=set_password)
     set_button.pack(side="top", expand=True)
 
-def edit_key_event():
-    keychain.modify_key()
+# def edit_key_event():
+#     keychain.modify_key()
 
 def edit_key_popup():
 
@@ -128,8 +104,6 @@ def edit_key_popup():
     get() methods in the command: parameters
 
     """
-
-
     try:
         # Setting up data needed. This will fail if nothing is selected
         edited_key = password_table.selection()[0]
@@ -165,9 +139,11 @@ def edit_key_popup():
             result = messagebox.askyesno("Confirm", "Update Password?")
             if result:
                 keychain.modify_key(id=new_id, label=popup_label_variable.get(), username=popup_username_variable.get(), password=popup_password_variable.get())
+                password_table.item(edited_key, values=(new_id, popup_label_variable.get(), popup_username_variable.get(), popup_password_variable.get()))
+
                 print("Password has been changed")
-            reload_treeview(password_table)
-            popup.destroy()
+                # reload_treeview(password_table)
+                popup.destroy()
 
         # # Debugging: Check if the variables hold correct values
         # print(f"Label: {popup_label_variable.get()}")
@@ -210,7 +186,6 @@ def edit_key_popup():
         error_msg = "No Key Selected."
         messagebox.showwarning("Attention!", error_msg)
         print(error_msg)
-
 
 def add_key_popup():
 
@@ -285,7 +260,6 @@ def add_key_button_event(popup):
     else:
         error_msg = "Please fill all required field"
         messagebox.showwarning("Attention!", error_msg)
-
 
 def delete_key_event():
     try:
