@@ -17,9 +17,11 @@ TODO:
     - add two inputs for password setting
     - after password is set, don't jsut destroy. make add button and input go away, and add a close button
     with a message that says it's ok to close
-    - stylize edit key to be the same as add key
+    - stylize edit key to be the same as add key (done)
     
 Bugs:
+    - when adding key, values of the previous add action is shown. Must clear the variables before 
+    main functionality starts
 
 """
 
@@ -44,7 +46,6 @@ def main():
             break
 
 keychain = Keychain()
-
 
 def center_window(window, width, height):
     """Center the window on the screen."""
@@ -134,38 +135,47 @@ def edit_key_popup():
         popup.resizable(False, False)
 
         # Set the size of the pop-up window
-        width = 350
-        height = 300
+        width = 450
+        height = 200
 
         # Center the pop-up window
         center_window(popup, width, height)
 
         # Create a frame inside the pop-up
         popup_frame = tk.Frame(popup)
-        popup_frame.pack(padx=10, pady=10, fill="x")
+        popup_frame.pack()
 
         popup_label_variable = item_values[1]
         popup_username_variable = item_values[2]
         popup_password_variable = item_values[3]
 
         # Add widgets
-        tk.Label(popup_frame, text="Label").grid(row=0, column=0, sticky="E")
-        label_entry = ttk.Entry(popup_frame)
+        label_label = tk.Label(popup_frame, text="Label")
+        label_label.grid(row=0, column=0, columnspan=2, sticky="EW")
+        label_entry = ttk.Entry(popup_frame, justify="center")
         label_entry.insert(0, popup_label_variable)
         label_entry.config(state='readonly')
-        label_entry.grid(row=0, column=1, sticky="WE", padx=5, pady=5)
+        label_entry.grid(row=1, column=0, columnspan=2, sticky="EW")
 
-        tk.Label(popup_frame, text="Username").grid(row=1, column=0, sticky="E")
-        username_entry = ttk.Entry(popup_frame)
+        username_label = tk.Label(popup_frame, text="Username")
+        username_label.grid(row=3, column=0, sticky="EW")
+        username_entry = ttk.Entry(popup_frame, justify="center")
         username_entry.insert(0, popup_username_variable)
         username_entry.config(state='readonly')
-        username_entry.grid(row=1, column=1, sticky="WE", padx=5, pady=5)
+        username_entry.grid(row=4, column=0, sticky="E")
 
-        tk.Label(popup_frame, text="Password").grid(row=2, column=0, sticky="E")
-        password_entry = ttk.Entry(popup_frame)
+        password_label = tk.Label(popup_frame, text="Password")
+        password_label.grid(row=3, column=1, sticky="EW")
+        password_entry = ttk.Entry(popup_frame, justify="center")
         password_entry.insert(0, popup_password_variable)
         password_entry.config(state='readonly')
-        password_entry.grid(row=2, column=1, sticky="WE", padx=5, pady=5)
+        password_entry.grid(row=4, column=1, sticky="E")
+
+        # Add buttons
+        update_button = ttk.Button(popup_frame, text="Add Key", command=lambda: print("Key Updated"))
+        update_button.grid(row=6, column=0, sticky="WE", pady=20)
+        cancel_button = ttk.Button(popup_frame, text="Cancel", command=popup.destroy)
+        cancel_button.grid(row=6, column=1, sticky="WE", pady=20)
 
     except IndexError:
         error_msg = "No key selected. Please select a key(row) to edit"
@@ -196,18 +206,18 @@ def add_key_popup():
     # Add widgets
     label_popup_label = tk.Label(popup_frame, text="Label")
     label_popup_label.grid(row=0, column=0, columnspan=2, sticky="EW")
-    label_entry = ttk.Entry(popup_frame, textvariable=label_variable)
+    label_entry = ttk.Entry(popup_frame, textvariable=label_variable, justify="center")
     # label_entry.insert(0, "enter name)")
     label_entry.grid(row=1, column=0, columnspan=2, sticky="EW")
 
     label_popup_username = tk.Label(popup_frame, text="Username")
     label_popup_username.grid(row=3, column=0, sticky="EW")
-    username_entry = ttk.Entry(popup_frame, textvariable=username_variable)
+    username_entry = ttk.Entry(popup_frame, textvariable=username_variable, justify="center")
     username_entry.grid(row=4, column=0, sticky="E")
 
     label_popup_password = tk.Label(popup_frame, text="Password")
     label_popup_password.grid(row=3, column=1, sticky="EW")
-    password_entry = ttk.Entry(popup_frame, textvariable=password_variable)
+    password_entry = ttk.Entry(popup_frame, textvariable=password_variable, justify="center")
     password_entry.grid(row=4, column=1, sticky="E")
 
     # Add buttons
@@ -259,6 +269,52 @@ def print_keychain():
     print("\n")
     for key in keychain.key_list:
         print(key.id, key.label, key.username, key.password)
+
+# def show_context_menu(event):
+#     try:
+#         context_menu.post(event.x_root, event.y_root)
+#     finally:
+#         context_menu.grab_release()
+
+def show_context_menu(event):
+    # Identify the row where the right-click occurred
+    selected_item = password_table.identify_row(event.y)
+
+    if selected_item:
+        # Select the row in the Treeview
+        password_table.selection_set(selected_item)
+        # Show the context menu at the right-click location
+        context_menu.post(event.x_root, event.y_root)
+
+
+def copy_to_clipboard(event):
+    # Identify which row and column was right-clicked
+    selected_item = password_table.identify_row(event.y)
+    column = password_table.identify_column(event.x)
+    col_index = int(column.split('#')[-1]) - 1
+
+    if selected_item:
+        # Get the text of the selected item and column
+        item_text = password_table.item(selected_item, 'values')[col_index]
+
+        # Copy the text to clipboard
+        window.clipboard_clear()
+        window.clipboard_append(item_text)
+        window.update()  # Ensure clipboard content is updated
+        messagebox.showinfo("Copied", "Text copied to clipboard")
+    else:
+        messagebox.showwarning("Error", "Unable to copy text.")
+
+
+# def show_context_menu(event):
+#     # Select the row under the cursor (right-clicked)
+#     row_id = password_table.identify_row(event.y)
+#     if row_id:
+#         password_table.selection_set(row_id)
+#         # Show context menu at the right-click location
+#         context_menu.post(event.x_root, event.y_root)
+
+
 
 window = tk.Tk()
 window.title("My Password Manager")
@@ -321,6 +377,13 @@ password_table.column("label", width=230)
 password_table.column("username", width=250)
 password_table.column("password", width=250)
 
+# Create context menu to handle right click copy to clipboard functionality
+context_menu = tk.Menu(window, tearoff=False)
+context_menu.add_command(label="Copy To Clipboard", command=lambda e: copy_to_clipboard(e))
+
+
+#bind the right click (button 3) to show context menu
+password_table.bind("<Button-2>", show_context_menu)
 
 # App Variables
 label_variable = tk.StringVar()
@@ -345,6 +408,12 @@ add_button.pack(side="right",  padx=10)
 # debug_label.pack()
 # print_key = ttk.Button(window, text="Print Keys", command=print_keychain)
 # print_key.pack(side="right", pady=20)
+
+# # Bind the right-click (button 3) to show the context menu
+# tree.bind("<Button-3>", show_context_menu)
+#
+# # Start the Tkinter main loop
+# root.mainloop()
 
 
 load_keys_on_startup()
