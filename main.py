@@ -13,7 +13,7 @@ TODO:
     - convert and load from json in menu
     
 Bugs:
-
+    - having issues with duplicatingS tringVar in update_key
 
 """
 
@@ -109,6 +109,9 @@ def menu_edit_password():
     set_button = ttk.Button(popup, text="Set Password", command=set_password)
     set_button.pack(side="top", expand=True)
 
+def edit_key_event():
+    keychain.modify_key()
+
 def edit_key_popup():
 
     try:
@@ -135,7 +138,9 @@ def edit_key_popup():
         # popup_label_variable = item_values[1]
         # popup_username_variable = item_values[2]
         # popup_password_variable = item_values[3]
+
         popup_label_variable = tk.StringVar(value=item_values[1])
+        print(item_values[2])
         popup_username_variable = tk.StringVar(value=item_values[2])
         popup_password_variable = tk.StringVar(value=item_values[3])
 
@@ -143,7 +148,7 @@ def edit_key_popup():
         label_label = tk.Label(popup_frame, text="Label")
         label_label.grid(row=0, column=0, columnspan=2, sticky="EW")
         label_entry = ttk.Entry(popup_frame, justify="center")
-        label_entry.insert(0, popup_label_variable.get())
+        # label_entry.insert(0, popup_label_variable.get())
         # label_entry.config(state='readonly')
         label_entry.grid(row=1, column=0, columnspan=2, sticky="EW")
 
@@ -157,7 +162,7 @@ def edit_key_popup():
         password_label = tk.Label(popup_frame, text="Password")
         password_label.grid(row=3, column=1, sticky="EW")
         password_entry = ttk.Entry(popup_frame, justify="center")
-        password_entry.insert(0, popup_password_variable.get())
+        # password_entry.insert(0, popup_password_variable.get())
         # password_entry.config(state='readonly')
         password_entry.grid(row=4, column=1, sticky="E")
 
@@ -165,7 +170,7 @@ def edit_key_popup():
         generate_password_button = ttk.Button(popup_frame, text="Generate Random", width=2, command=lambda: password_variable.set(password_generator(20)))
         generate_password_button.grid(row=5, column=1, sticky="NSEW")
 
-        update_button = ttk.Button(popup_frame, text="Update Key", command=update_key_event)
+        update_button = ttk.Button(popup_frame, text="Update Key", command=lambda: print(popup_username_variable.get()))
         update_button.grid(row=6, column=0, sticky="WE", pady=20)
 
         cancel_button = ttk.Button(popup_frame, text="Cancel", command=popup.destroy)
@@ -234,9 +239,6 @@ def load_keys_on_startup():
     for key in keychain.key_list:
         new_key = (key.id, key.label, key.username, key.password)
         password_table.insert(parent="", index=key.id, values=new_key)
-
-def update_key_event():
-    keychain.modify_key()
 
 def add_key_button_event(popup):
     label = label_variable.get()
