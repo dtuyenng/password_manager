@@ -73,8 +73,12 @@ class Keychain:
     def remove_allkeys(self):
         self.key_list = []
 
-    def modify_key(self):
-        print("Key modified")
+    def modify_key(self, id, label, username, password):
+        self.key_list[id].label = label
+        self.key_list[id].username = username
+        self.key_list[id].password = password
+        self.save_keychain()
+        print("Key Updated successfully.")
 
 class Key:
     def __init__(self, key_id, key_label: str, username: str, password: str):
