@@ -427,3 +427,60 @@ keychain.save_keychain() #Save keychain when app quits
 #     # keychain.add_key("Fidelity", "dn52002@gmail.com", password_generator(20))
 #     if authenticate(keychain):
 #         main()
+
+
+
+#
+# import tkinter as tk
+# from tkinter import ttk
+# from tkinter import messagebox
+#
+#
+# def on_copy(cell_value):
+#     root.clipboard_clear()  # Clear the clipboard
+#     root.clipboard_append(cell_value)  # Append the copied cell value
+#     messagebox.showinfo("Copied", f"Copied: {cell_value}")
+#
+#
+# def show_context_menu(event):
+#     # Get the item and column where the right-click occurred
+#     item_id = tree.identify_row(event.y)
+#     column_id = tree.identify_column(event.x)
+#
+#     if not item_id:
+#         return
+#
+#     # Get the column index (ignore the first column which is for row identifiers)
+#     col_index = int(column_id.split('#')[1]) - 1
+#     if col_index < 0:
+#         return
+#
+#     # Get the value of the cell
+#     cell_value = tree.item(item_id, 'values')[col_index]
+#
+#     # Display the context menu
+#     context_menu.post(event.x_root, event.y_root)
+#
+#     # Bind the copy action to the cell value
+#     context_menu.entryconfig("Copy", command=lambda: on_copy(cell_value))
+#
+#
+# root = tk.Tk()
+# root.title("Simple Tkinter App")
+#
+# # Create the Treeview
+# tree = ttk.Treeview(root, columns=("Column 1", "Column 2"), show='headings')
+# tree.heading("Column 1", text="Column 1")
+# tree.heading("Column 2", text="Column 2")
+# tree.insert("", "end", values=("Item 1", "Item 2"))
+#
+# tree.pack(padx=10, pady=10)
+#
+# # Create the context menu
+# context_menu = tk.Menu(root, tearoff=0)
+# context_menu.add_command(label="Copy")
+#
+# # Bind right-click event to show the context menu
+# tree.bind("<Button-2>", show_context_menu)
+#
+# root.mainloop()
