@@ -1,11 +1,6 @@
-from ast import Param
-from importlib.metadata import files
-from tabnanny import check
 
 from Keychain import *
 from password_generator import password_generator
-from authenticate import authenticate
-import json
 import tkinter as tk
 from tkinter import ttk, StringVar, Entry
 from tkinter import messagebox
@@ -14,57 +9,54 @@ from tkinter import filedialog
 """
 
 TODO:
-    - convert and load from json in menu
+    work logic to make sure keychain.keylist isn't loaded BEFORE autherication
     
 Bugs:
 
 """
 
-# def main(): ####### Text Based Menu
-#     # print("\n" * 100)
-#     keychain.display_keys()
-#     while True:
-#         print("(d)isplay keychain (a)dd key (r)emove key (s)ave Keychain       (q)uit")
-#         user_input = input(">").lower()
-#         if user_input == "d":
-#             print("\n" * 100)
-#             keychain.display_keys()
-#         if user_input == "r":
-#             user_input = input("Remove key with ID: ")
-#             keychain.remove_key(int(user_input))
-#         if user_input == "s":
-#             keychain.save_keychain()
-#         if user_input == "g":
-#             password_generator(20)
-#             print("Generated Password: " + password_generator(20))
-#         if user_input == "q":
-#             break
-
 keychain = Keychain()
 
 def save_file():
-    file = filedialog.asksaveasfile(mode="wb", defaultextension=".bin", filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
-    file.write(keychain.save_keychain_to_data())
-    file.close()
+    try:
+        file = filedialog.asksaveasfile(mode="wb", defaultextension=".bin", filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
+        file.write(keychain.save_keychain_to_data())
+        file.close()
+    except AttributeError:
+        print("AttributeError")
 
 def authenticate_user(window):
+    allowed_tries = tk.IntVar(value=3)
+    if keychain.get_password() == "":
+        print("No Password Was Set")
+        load_keys_on_startup()
+        return
+
     root = tk.Tk()
     root.title("Authenticate User")
+    root.resizable(False, False)
+
     # Set the size of the pop-up window
     width = 350
     height = 110
 
-
     def check_authentication():
         entered_password = input_password.get()
-        print("Checking Authentication")
-        print(f"Entered Password: {entered_password}")
-        print(f"Stored Password: {keychain.get_password()}")  # Assuming keychain.get_password() works
 
-        if entered_password == keychain.get_password():
-            print("User Authenticated")
-            load_keys_on_startup()
-            root.destroy()
+        if allowed_tries.get() > 0:
+
+            if allowed_tries.get() > 1:
+                warning_label.config(text=f"Tries Left: {allowed_tries.get()}")
+            else:
+                warning_label.config(text="Last Chance Before Keychain Destruction.")
+            allowed_tries.set(allowed_tries.get() - 1)
+            input_password.delete(0, tk.END)
+            input_password.focus()
+
+            if entered_password == keychain.get_password():
+                print("User Authenticated")
+                load_keys_on_startup()
+                root.destroy()
         else:
             print("Authentication Failed")
             window.destroy()
@@ -83,6 +75,9 @@ def authenticate_user(window):
 
     button = ttk.Button(root, text="Submit", command=check_authentication)
     button.pack(side="top", fill="x", padx=5)
+
+    warning_label = ttk.Label(root, text="")
+    warning_label.pack()
 
 
 def center_window(window, width, height):
@@ -140,9 +135,6 @@ def menu_edit_password():
 
     set_button = ttk.Button(popup, text="Set Password", command=set_password)
     set_button.pack(side="top", expand=True)
-
-# def edit_key_event():
-#     keychain.modify_key()
 
 def edit_key_popup():
 

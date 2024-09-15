@@ -1,13 +1,11 @@
 import json
-import uuid
-from password_generator import password_generator
 import pickle
 from encryption import encrypt, decrypt, password
 
 
 class Keychain:
     def __init__(self):
-        self.__password = "123" #private variable
+        self.__password = "" #private variable
         self.key_list = []
         self.load_keychain()
 
@@ -33,17 +31,19 @@ class Keychain:
 
     def load_keychain(self):
         self.remove_allkeys() #clear from all keys
+        try:
+            with open("data.bin", "rb") as file:
+                data = pickle.load(file)
 
-        with open("data.bin", "rb") as file:
-            data = pickle.load(file)
+            decrypted_data = decrypt(data).decode("utf-8")  # decrypt data, then decode bytes into original json str
+            data_list = json.loads(decrypted_data)  # convert json str to list
+            print(f"data_list: {data_list["password"]}")
 
-        decrypted_data = decrypt(data).decode("utf-8")  # decrypt data, then decode bytes into original json str
-        data_list = json.loads(decrypted_data)          # convert json str to list
-        print(f"data_list: {data_list["password"]}")
-
-        self.set_password(data_list["password"])
-        for key in data_list["key_list"]:
-            self.add_key(key["label"], key["username"], key["password"])
+            self.set_password(data_list["password"])
+            for key in data_list["key_list"]:
+                self.add_key(key["label"], key["username"], key["password"])
+        except FileNotFoundError:
+            print("File not found")
 
     # The data is first converted into a dict, then serialized as a JSON
     # then encoded. It is then encrypted and stored
