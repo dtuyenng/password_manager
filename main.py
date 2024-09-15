@@ -9,6 +9,7 @@ import json
 import tkinter as tk
 from tkinter import ttk, StringVar, Entry
 from tkinter import messagebox
+from tkinter import filedialog
 
 """
 
@@ -41,9 +42,10 @@ Bugs:
 
 keychain = Keychain()
 
-import tkinter as tk
-from tkinter import ttk
-
+def save_file():
+    file = filedialog.asksaveasfile(mode="wb", defaultextension=".bin", filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
+    file.write(keychain.save_keychain_to_data())
+    file.close()
 
 def authenticate_user(window):
     root = tk.Tk()
@@ -324,6 +326,7 @@ def delete_key_event():
 def print_keychain():
     print(keychain.key_list)
     print("\n")
+    print(keychain.get_password())
     for key in keychain.key_list:
         print(key.id, key.label, key.username, key.password)
 
@@ -366,8 +369,7 @@ def menu_import_keychain():
     pass
 
 def menu_export_keychain():
-    pass
-
+    save_file()
 
 # Create Menu Bar
 menu = tk.Menu(window)

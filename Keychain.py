@@ -27,7 +27,7 @@ class Keychain:
         for key_obj in self.key_list:
             key_list_dict.append(key_obj.to_dict())
         return {
-            "password": self.password,
+            "password": self.get_password(),
             "key_list": key_list_dict
         }
 
@@ -39,8 +39,9 @@ class Keychain:
 
         decrypted_data = decrypt(data).decode("utf-8")  # decrypt data, then decode bytes into original json str
         data_list = json.loads(decrypted_data)          # convert json str to list
+        print(f"data_list: {data_list["password"]}")
 
-        self.password = data_list["password"]
+        self.set_password(data_list["password"])
         for key in data_list["key_list"]:
             self.add_key(key["label"], key["username"], key["password"])
 
@@ -48,10 +49,16 @@ class Keychain:
     # then encoded. It is then encrypted and stored
     def save_keychain(self):
         data = json.dumps(self.to_dict()).encode("utf-8")
+        print(f"data: {data}")
         encrypted_data = encrypt(data)
         with open("data.bin", "wb") as file:
             pickle.dump(encrypted_data, file)
         print("Keychain saved to local storage.")
+
+    def save_keychain_to_data(self):
+        data = json.dumps(self.to_dict()).encode("utf-8")
+        encrypted_data = encrypt(data)
+        return encrypted_data
 
     def display_keys(self):
         print("Registered Keys:")
