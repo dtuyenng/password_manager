@@ -1,10 +1,13 @@
+from ast import Param
 from importlib.metadata import files
+from tabnanny import check
+
 from Keychain import *
 from password_generator import password_generator
 from authenticate import authenticate
 import json
 import tkinter as tk
-from tkinter import ttk, StringVar
+from tkinter import ttk, StringVar, Entry
 from tkinter import messagebox
 
 """
@@ -37,6 +40,48 @@ Bugs:
 #             break
 
 keychain = Keychain()
+
+import tkinter as tk
+from tkinter import ttk
+
+
+def authenticate_user(window):
+    root = tk.Tk()
+    root.title("Authenticate User")
+    # Set the size of the pop-up window
+    width = 350
+    height = 110
+
+
+    def check_authentication():
+        entered_password = input_password.get()
+        print("Checking Authentication")
+        print(f"Entered Password: {entered_password}")
+        print(f"Stored Password: {keychain.get_password()}")  # Assuming keychain.get_password() works
+
+        if entered_password == keychain.get_password():
+            print("User Authenticated")
+            load_keys_on_startup()
+            root.destroy()
+        else:
+            print("Authentication Failed")
+            window.destroy()
+            root.destroy()
+
+    # Center the pop-up window
+    center_window(root, width, height)
+
+    # Set focus to the input field
+    label = ttk.Label(root, text="Enter Password")
+    label.pack(side="top", fill="x", padx=5)
+
+    input_password = ttk.Entry(root, justify="center", show="*")
+    input_password.pack(side="top", fill="x", padx=5)
+    input_password.focus()  # Set focus on the entry widget
+
+    button = ttk.Button(root, text="Submit", command=check_authentication)
+    button.pack(side="top", fill="x", padx=5)
+
 
 def center_window(window, width, height):
     """Center the window on the screen."""
@@ -311,9 +356,9 @@ def show_context_menu(event):
         context_menu.post(event.x_root, event.y_root)
 
 
+
 window = tk.Tk()
 window.title("My Password Manager")
-
 center_window(window, 800, 500)
 window.resizable(False, False)
 
@@ -415,6 +460,7 @@ add_button.pack(side="right",  padx=10)
 # root.mainloop()
 
 
-load_keys_on_startup()
+
+authenticate_user(window)
 window.mainloop()
 keychain.save_keychain() #Save keychain when app quits
