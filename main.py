@@ -9,8 +9,7 @@ from tkinter import filedialog
 """
 
 TODO:
-    work logic to make sure keychain.keylist isn't loaded BEFORE autherication
-    
+
 Bugs:
 
 """
