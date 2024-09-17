@@ -1,3 +1,4 @@
+from zipfile import PyZipFile
 
 from Keychain import *
 from password_generator import password_generator
@@ -9,13 +10,19 @@ from tkinter import filedialog
 """
 
 TODO:
+    - load_key on startup could use some refinements, could for example rename it so it isn't implied to be 
+    only used during startup
 
 Bugs:
 
 """
-
-keychain = Keychain()
-
+def load_file():
+    file_path = filedialog.askopenfilename(
+        title="Choose Keychain  File",
+        filetypes=[("Binary", "*.bin"), ("All Files", "*.*")]
+    )
+    keychain.load_keychain(file_path)
+    load_keys_on_startup()
 
 def save_file():
     try:
@@ -30,15 +37,20 @@ def authenticate_user(window):
     if keychain.get_password() == "":
         print("No Password Was Set")
         load_keys_on_startup()
+        main_frame.pack(pady=20)
+        bottom_frame.pack()
         return
 
-    root = tk.Tk()
-    root.title("Authenticate User")
+    authenticate_window = tk.Tk()
+    authenticate_window.title("Authenticate User")
     # root.resizable(False, False)
 
     # Set the size of the pop-up window
     width = 350
-    height = 110
+    height = 210
+
+    # Center the pop-up window
+    center_window(authenticate_window, width, height)
 
     def check_authentication():
         entered_password = input_password.get()
@@ -55,29 +67,34 @@ def authenticate_user(window):
 
             if entered_password == keychain.get_password():
                 print("User Authenticated")
-                image_label.destroy()
+                emoji_label.destroy()
                 load_keys_on_startup()
-                root.destroy()
+                authenticate_window.destroy()
+                main_frame.pack(pady=20)
+                bottom_frame.pack()
         else:
             print("Authentication Failed")
             window.destroy()
-            root.destroy()
+            authenticate_window.destroy()
 
-    # Center the pop-up window
-    center_window(root, width, height)
+
 
     # Set the widgets
-    label = ttk.Label(root, text="Enter Password", anchor="center")
+
+    emoji_label = tk.Label(authenticate_window, text="🔐", font=("Arial", 50), fg="white")
+    emoji_label.pack()
+
+    label = ttk.Label(authenticate_window, text="Enter Password", anchor="center")
     label.pack(side="top", fill="x", padx=5)
 
-    input_password = ttk.Entry(root, justify="center", show="*")
+    input_password = ttk.Entry(authenticate_window, justify="center", show="*")
     input_password.pack(side="top", fill="x", padx=5)
     input_password.focus()  # Set focus on the entry widget
 
-    button = ttk.Button(root, text="Submit", command=check_authentication)
+    button = ttk.Button(authenticate_window, text="Submit", command=check_authentication)
     button.pack(side="top", fill="x", padx=5)
 
-    warning_label = ttk.Label(root, text="")
+    warning_label = ttk.Label(authenticate_window, text="")
     warning_label.pack()
 
 
@@ -280,6 +297,10 @@ def add_key_popup():
     generate_password_button.grid(row=5, column=1, sticky="NSEW")
 
 def load_keys_on_startup():
+    # Delete all items in the Treeview
+    for item in password_table.get_children():
+        password_table.delete(item)
+
     for key in keychain.key_list:
         new_key = (key.id, key.label, key.username, key.password)
         password_table.insert(parent="", index=key.id, values=new_key)
@@ -351,18 +372,18 @@ def show_context_menu(event):
     if item_id:
         context_menu.post(event.x_root, event.y_root)
 
+################################# TKINTER ##################################
 
+keychain = Keychain()
 
 window = tk.Tk()
 window.title("My Password Manager")
 center_window(window, 800, 500)
 window.resizable(False, False)
 
-def menu_import_keychain():
-    pass
+emoji_label = tk.Label(window, text="🔐")
 
-def menu_export_keychain():
-    save_file()
+################################# Menu ##################################
 
 # Create Menu Bar
 menu = tk.Menu(window)
@@ -372,25 +393,19 @@ window.config(menu=menu)
 
 file_menu = tk.Menu(menu)
 menu.add_cascade(label="File", menu=file_menu)
-file_menu.add_command(label="Import Keychain", command = menu_import_keychain)
-file_menu.add_command(label="Export Keychain...", command = menu_export_keychain)
+file_menu.add_command(label="Import Keychain", command = load_file)
+file_menu.add_command(label="Export Keychain...", command = save_file)
 file_menu.add_separator()
 file_menu.add_command(label="Set Password...", command = menu_edit_password)
 file_menu.add_separator()
 file_menu.add_command(label="Debug: Print Keychain", command = print_keychain)
 file_menu.add_command(label="Quit Password Manager", command = window.quit)
+# main_frame.pack(pady=20)
 
-# about_menu = tk.Menu(menu)
-# menu.add_cascade(label="Password Manager", menu=about_menu)
-# about_menu.add_command(label="About Password Manager", command=menu_about)
-# about_menu.add_command(label="Help", command=menu_about)
-
-image = tk.PhotoImage(file="shield-lock.png")
-image_label = tk.Label(window, image=image)
-image_label.pack()
+############################## MAIN FRAME #################################
 
 main_frame = tk.Frame(window)
-main_frame.pack(pady=20)
+# main_frame.pack(pady=20) #packing it during authentication
 
 #Scroll bar for the TreeView
 scroll_bar = tk.Scrollbar(main_frame, orient="vertical")
@@ -434,7 +449,7 @@ password_variable = tk.StringVar()
 
 #Setting bottom buttons inside a frame and center it
 bottom_frame = tk.Frame(window)
-bottom_frame.pack()
+# bottom_frame.pack() # packing in during authentication
 
 delete_button = ttk.Button(bottom_frame, text="Delete", command=delete_key_event)
 delete_button.pack(side="right", padx=10)
