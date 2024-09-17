@@ -16,6 +16,7 @@ Bugs:
 
 keychain = Keychain()
 
+
 def save_file():
     try:
         file = filedialog.asksaveasfile(mode="wb", defaultextension=".bin", filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
@@ -33,7 +34,7 @@ def authenticate_user(window):
 
     root = tk.Tk()
     root.title("Authenticate User")
-    root.resizable(False, False)
+    # root.resizable(False, False)
 
     # Set the size of the pop-up window
     width = 350
@@ -54,6 +55,7 @@ def authenticate_user(window):
 
             if entered_password == keychain.get_password():
                 print("User Authenticated")
+                image_label.destroy()
                 load_keys_on_startup()
                 root.destroy()
         else:
@@ -64,8 +66,8 @@ def authenticate_user(window):
     # Center the pop-up window
     center_window(root, width, height)
 
-    # Set focus to the input field
-    label = ttk.Label(root, text="Enter Password")
+    # Set the widgets
+    label = ttk.Label(root, text="Enter Password", anchor="center")
     label.pack(side="top", fill="x", padx=5)
 
     input_password = ttk.Entry(root, justify="center", show="*")
@@ -122,7 +124,7 @@ def menu_edit_password():
     center_window(popup, width, height)
 
     label = ttk.Label(popup, text="Enter Password")
-    label.pack(side="top", expand=True)
+    label.pack(side="top", expand=True, )
 
     input1 = ttk.Entry(popup, textvariable=passwordVar1, justify="center")
     input1.pack(side="top", expand=True)
@@ -383,6 +385,9 @@ file_menu.add_command(label="Quit Password Manager", command = window.quit)
 # about_menu.add_command(label="About Password Manager", command=menu_about)
 # about_menu.add_command(label="Help", command=menu_about)
 
+image = tk.PhotoImage(file="shield-lock.png")
+image_label = tk.Label(window, image=image)
+image_label.pack()
 
 main_frame = tk.Frame(window)
 main_frame.pack(pady=20)
@@ -439,6 +444,8 @@ edit_button.pack(side="right", padx=10)
 
 add_button = ttk.Button(bottom_frame, text="Add", command=add_key_popup)
 add_button.pack(side="right",  padx=10)
+
+
 
 
 # debug_label = ttk.Label(window, text=f"{label_variable}")
