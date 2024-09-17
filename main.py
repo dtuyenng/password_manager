@@ -14,6 +14,7 @@ TODO:
     only used during startup
 
 Bugs:
+    - export/import not working. Try a simple testing app using the encryption/decryption functions
 
 """
 def load_file():
@@ -26,11 +27,31 @@ def load_file():
 
 def save_file():
     try:
-        file = filedialog.asksaveasfile(mode="wb", defaultextension=".bin", filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
-        file.write(keychain.save_keychain_to_data())
-        file.close()
+        file = filedialog.asksaveasfile(
+            mode="wb",
+            defaultextension=".bin",
+            filetypes=[("Binary files", "*.bin"), ("All files", "*.*")]
+        )
+        if file:
+            # Assuming `keychain.save_keychain_to_data()` returns the raw data
+            data = keychain.save_keychain_to_data()
+            file.write(data)
+            file.close()
+            print("Keychain saved to file.")
+        else:
+            print("No file selected.")
     except AttributeError:
-        print("AttributeError")
+        messagebox.showerror("Error", "An attribute error occurred. Please check your code.")
+    except Exception as e:
+        messagebox.showerror("Error", f"An unexpected error occurred: {e}")
+
+# def save_file():
+#     try:
+#         file = filedialog.asksaveasfile(mode="wb", defaultextension=".bin", filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
+#         file.write(keychain.save_keychain_to_data())
+#         file.close()
+#     except AttributeError:
+#         print("AttributeError")
 
 def authenticate_user(window):
     allowed_tries = tk.IntVar(value=3)

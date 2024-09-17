@@ -84,16 +84,17 @@ class Keychain:
 
     # The data is first converted into a dict, then serialized as a JSON
     # then encoded. It is then encrypted and stored
-    def save_keychain(self):
+    def save_keychain(self, path: str):
         data = json.dumps(self.to_dict()).encode("utf-8")
         print(f"data: {data}")
         encrypted_data = encrypt(data)
-        with open("data.bin", "wb") as file:
+        with open(path, "wb") as file:
             pickle.dump(encrypted_data, file)
         print("Keychain saved to local storage.")
 
     def save_keychain_to_data(self):
         data = json.dumps(self.to_dict()).encode("utf-8")
+        print(f"data: {data}")
         encrypted_data = encrypt(data)
         return encrypted_data
 
