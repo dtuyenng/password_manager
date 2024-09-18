@@ -9,7 +9,7 @@ class Keychain:
         self.key_list = []
         self.load_keychain("data.bin")
 
-    def set_password(self, password):
+    def set_password(self, password: str):
         self.__password = password
 
     def get_password(self):
@@ -30,71 +30,35 @@ class Keychain:
         }
     ######################################################
     # Load keychain from a path as string i.e "data.bin"
-
     def load_keychain(self, path: str):
-        self.remove_allkeys()  # Clear all keys
+        self.remove_allkeys() #clear from all keys
         try:
             with open(path, "rb") as file:
                 data = pickle.load(file)
 
-            decrypted_data = decrypt(data).decode("utf-8")  # Decrypt data and decode bytes into original JSON string
-            data_list = json.loads(decrypted_data)  # Convert JSON string to list
-            print(data_list)
+            decrypted_data = decrypt(data).decode("utf-8")  # decrypt data, then decode bytes into original json str
+            data_list = json.loads(decrypted_data)  # convert json str to list
+            print(f"load_keychain -> data_list: {data_list["password"]}  {data_list['key_list']}")
 
-            # Ensure the expected keys are in the data
-            if "password" in data_list:
-                print(f"Password: {data_list['password']}")
-                self.set_password(data_list["password"])
-            else:
-                print("Password key not found in the data")
-
-            if "key_list" in data_list:
-                for key in data_list["key_list"]:
-                    if "label" in key and "username" in key and "password" in key:
-                        self.add_key(key["label"], key["username"], key["password"])
-                    else:
-                        print(f"Invalid key format: {key}")
-            else:
-                print("Key list not found in the data")
-
+            self.set_password(data_list["password"])
+            for key in data_list["key_list"]:
+                self.add_key(key["label"], key["username"], key["password"])
         except FileNotFoundError:
             print("File not found")
-        except EOFError:
-            print("Error: Pickle data was truncated")
-        except (pickle.PickleError, json.JSONDecodeError) as e:
-            print(f"Error loading data: {e}")
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-
-    # def load_keychain(self, path: str):
-    #     self.remove_allkeys() #clear from all keys
-    #     try:
-    #         with open(path, "rb") as file:
-    #             data = pickle.load(file)
-    #
-    #         decrypted_data = decrypt(data).decode("utf-8")  # decrypt data, then decode bytes into original json str
-    #         data_list = json.loads(decrypted_data)  # convert json str to list
-    #         print(f"data_list: {data_list["password"]}")
-    #
-    #         self.set_password(data_list["password"])
-    #         for key in data_list["key_list"]:
-    #             self.add_key(key["label"], key["username"], key["password"])
-    #     except FileNotFoundError:
-    #         print("File not found")
 
     # The data is first converted into a dict, then serialized as a JSON
     # then encoded. It is then encrypted and stored
     def save_keychain(self, path: str):
         data = json.dumps(self.to_dict()).encode("utf-8")
-        print(f"data: {data}")
+        print(f"save_keychain -> data: {data}")
         encrypted_data = encrypt(data)
         with open(path, "wb") as file:
             pickle.dump(encrypted_data, file)
         print("Keychain saved to local storage.")
 
-    def save_keychain_to_data(self):
+    def save_keychain_to_file(self):
         data = json.dumps(self.to_dict()).encode("utf-8")
-        print(f"data: {data}")
+        print(f"save_keychain_to_file -> data: {data}")
         encrypted_data = encrypt(data)
         return encrypted_data
 

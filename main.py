@@ -12,9 +12,10 @@ from tkinter import filedialog
 TODO:
     - load_key on startup could use some refinements, could for example rename it so it isn't implied to be 
     only used during startup
+    - import/export reusing multiple code fragments, need to clean that up
 
 Bugs:
-    - export/import not working. Try a simple testing app using the encryption/decryption functions
+    - pyinstaller using -w not working, keys arent saved
 
 """
 def load_file():
@@ -22,36 +23,34 @@ def load_file():
         title="Choose Keychain  File",
         filetypes=[("Binary", "*.bin"), ("All Files", "*.*")]
     )
-    keychain.load_keychain(file_path)
-    load_keys_on_startup()
+    print(file_path)
+    # keychain.load_keychain(file_path)
+    # # load_keys_on_startup()
+
+    if file_path:
+        print(f"Selected file: {file_path}")
+
+        try:
+            # Open and read the binary file
+            with open(file_path, 'rb') as file:
+                binary_data = file.read()
+                decrypted_data = json.loads(decrypt(binary_data).decode("utf-8"))
+
+                keychain.remove_allkeys()
+                keychain.set_password(decrypted_data["password"])
+                for key in decrypted_data["key_list"]:
+                    keychain.add_key(key["label"], key["username"], key["password"])
+            load_keys_on_startup()
+        except Exception as e:
+            print(f"Error loading file: {e}")
 
 def save_file():
     try:
-        file = filedialog.asksaveasfile(
-            mode="wb",
-            defaultextension=".bin",
-            filetypes=[("Binary files", "*.bin"), ("All files", "*.*")]
-        )
-        if file:
-            # Assuming `keychain.save_keychain_to_data()` returns the raw data
-            data = keychain.save_keychain_to_data()
-            file.write(data)
-            file.close()
-            print("Keychain saved to file.")
-        else:
-            print("No file selected.")
+        file = filedialog.asksaveasfile(mode="wb", defaultextension=".bin", filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
+        file.write(keychain.save_keychain_to_file())
+        file.close()
     except AttributeError:
-        messagebox.showerror("Error", "An attribute error occurred. Please check your code.")
-    except Exception as e:
-        messagebox.showerror("Error", f"An unexpected error occurred: {e}")
-
-# def save_file():
-#     try:
-#         file = filedialog.asksaveasfile(mode="wb", defaultextension=".bin", filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
-#         file.write(keychain.save_keychain_to_data())
-#         file.close()
-#     except AttributeError:
-#         print("AttributeError")
+        print("AttributeError")
 
 def authenticate_user(window):
     allowed_tries = tk.IntVar(value=3)
@@ -499,4 +498,4 @@ add_button.pack(side="right",  padx=10)
 
 authenticate_user(window)
 window.mainloop()
-keychain.save_keychain() #Save keychain when app quits
+keychain.save_keychain("data.bin") #Save keychain when app quits
