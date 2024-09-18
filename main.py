@@ -138,14 +138,14 @@ def menu_edit_password():
 
     def set_password():
         if passwordVar1.get()  == "" :
-            warning_msg.set("Enter a password")
+            warning_msg.set("Enter New Password")
         elif passwordVar2.get() == "" :
             warning_msg.set("Confirm password.")
         elif passwordVar1.get() != passwordVar2.get():
             warning_msg.set("Passwords do not match.")
         else:
             keychain.set_password(passwordVar1.get())
-            keychain.save_keychain()
+            keychain.save_keychain("data.bin")
             messagebox.showinfo("Password Changed", "Password has been changed")
             popup.destroy()
 
@@ -160,7 +160,7 @@ def menu_edit_password():
     # Centering window function
     center_window(popup, width, height)
 
-    label = ttk.Label(popup, text="Enter Password")
+    label = ttk.Label(popup, text="Enter New Password")
     label.pack(side="top", expand=True, )
 
     input1 = ttk.Entry(popup, textvariable=passwordVar1, justify="center")
