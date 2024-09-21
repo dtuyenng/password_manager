@@ -55,12 +55,14 @@ def save_file():
         print("AttributeError")
 
 def authenticate_user(window):
+
     allowed_tries = tk.IntVar(value=3)
     if keychain.get_password() == "":
         print("No Password Was Set")
         load_keys_on_startup()
         main_frame.pack(pady=20)
         bottom_frame.pack()
+        menu_edit_password()
         return
 
     authenticate_window = tk.Tk()
@@ -91,11 +93,17 @@ def authenticate_user(window):
                 print("User Authenticated")
                 emoji_label.destroy()
                 load_keys_on_startup()
+                keychain.save_keychain(get_save_path("data.bin"))
                 authenticate_window.destroy()
                 main_frame.pack(pady=20)
                 bottom_frame.pack()
         else:
             print("Authentication Failed")
+
+            keychain.key_list = []
+            keychain.set_password("")
+            keychain.save_keychain(get_save_path("data.bin"))
+
             window.destroy()
             authenticate_window.destroy()
 
@@ -165,9 +173,9 @@ def menu_edit_password():
     label = ttk.Label(popup, text="Enter Password")
     label.pack(side="top", expand=True, )
 
-    input1 = ttk.Entry(popup, textvariable=passwordVar1, justify="center")
+    input1 = ttk.Entry(popup, textvariable=passwordVar1, justify="center", show="*")
     input1.pack(side="top", expand=True)
-    input2 = ttk.Entry(popup, textvariable=passwordVar2, justify="center")
+    input2 = ttk.Entry(popup, textvariable=passwordVar2, justify="center", show="*")
     input2.pack(side="top", expand=True)
 
     label_error_warning = ttk.Label(popup, textvariable=warning_msg)

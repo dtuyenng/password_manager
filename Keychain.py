@@ -49,6 +49,8 @@ class Keychain:
                 self.add_key(key["label"], key["username"], key["password"])
         except FileNotFoundError:
             print(f"File not found. Path: {path}")
+            #prompt to set password.
+
 
     # The data is first converted into a dict, then serialized as a JSON
     # then encoded. It is then encrypted and stored
