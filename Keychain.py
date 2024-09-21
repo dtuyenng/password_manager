@@ -1,10 +1,7 @@
 import json
 import pickle
-import os
-import sys
-from importlib.metadata import PathDistribution
 from data_path import *
-from encryption import encrypt, decrypt, password
+from encryption import encrypt, decrypt
 
 
 data_file = get_resource_path("data.bin")

@@ -1,11 +1,8 @@
-from zipfile import PyZipFile
-import os
-import sys
 from Keychain import *
 from password_generator import password_generator
 import tkinter as tk
 from data_path import *
-from tkinter import ttk, StringVar, Entry
+from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog
 
