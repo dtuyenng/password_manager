@@ -1,3 +1,0 @@
-([('main',
-   '/Users/dtn/Documents/PythonProjects/password_manager/dist/main',
-   'EXECUTABLE')],)
