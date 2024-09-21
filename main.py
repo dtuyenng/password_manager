@@ -14,7 +14,9 @@ TODO:
     - import/export reusing multiple code fragments, need to clean that up
 
 Bugs:
-    - pyinstaller using -w not working, keys arent saved
+    - pyinstaller using --onefile not working, keys arent saved. Something with the paths
+    --windowed works though
+    
 
 """
 
