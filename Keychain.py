@@ -1,13 +1,17 @@
 import json
 import pickle
-from encryption import encrypt, decrypt, password
+from data_path import *
+from encryption import encrypt, decrypt
 
+
+data_file = get_resource_path("data.bin")
 
 class Keychain:
     def __init__(self):
         self.__password = "" #private variable
         self.key_list = []
-        self.load_keychain("data.bin")
+        show_paths()
+        self.load_keychain(get_resource_path("data.bin"))
 
     def set_password(self, password: str):
         self.__password = password
@@ -30,7 +34,7 @@ class Keychain:
         }
     ######################################################
     # Load keychain from a path as string i.e "data.bin"
-    def load_keychain(self, path: str):
+    def load_keychain(self, path):
         self.remove_allkeys() #clear from all keys
         try:
             with open(path, "rb") as file:
@@ -44,7 +48,9 @@ class Keychain:
             for key in data_list["key_list"]:
                 self.add_key(key["label"], key["username"], key["password"])
         except FileNotFoundError:
-            print("File not found")
+            print(f"File not found. Path: {path}")
+            #prompt to set password.
+
 
     # The data is first converted into a dict, then serialized as a JSON
     # then encoded. It is then encrypted and stored
@@ -54,7 +60,7 @@ class Keychain:
         encrypted_data = encrypt(data)
         with open(path, "wb") as file:
             pickle.dump(encrypted_data, file)
-        print("Keychain saved to local storage.")
+        print(f"Keychain saved to local storage. Path {path}")
 
     def save_keychain_to_file(self):
         data = json.dumps(self.to_dict()).encode("utf-8")
@@ -88,7 +94,7 @@ class Keychain:
         self.key_list[id-1].label = label
         self.key_list[id-1].username = username
         self.key_list[id-1].password = password
-        self.save_keychain()
+        self.save_keychain(get_save_path("data.bin"))
         print("Key Updated successfully.")
 
 class Key:

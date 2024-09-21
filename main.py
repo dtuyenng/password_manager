@@ -1,9 +1,8 @@
-from zipfile import PyZipFile
-
 from Keychain import *
 from password_generator import password_generator
 import tkinter as tk
-from tkinter import ttk, StringVar, Entry
+from data_path import *
+from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog
 
@@ -13,19 +12,21 @@ TODO:
     - load_key on startup could use some refinements, could for example rename it so it isn't implied to be 
     only used during startup
     - import/export reusing multiple code fragments, need to clean that up
+    - implement time-out function
 
 Bugs:
-    - pyinstaller using -w not working, keys arent saved
+    - pyinstaller using --onefile not working, keys arent saved. Something with the paths
+    --windowed works though
+    
 
 """
+
 def load_file():
     file_path = filedialog.askopenfilename(
         title="Choose Keychain  File",
         filetypes=[("Binary", "*.bin"), ("All Files", "*.*")]
     )
     print(file_path)
-    # keychain.load_keychain(file_path)
-    # # load_keys_on_startup()
 
     if file_path:
         print(f"Selected file: {file_path}")
@@ -53,17 +54,21 @@ def save_file():
         print("AttributeError")
 
 def authenticate_user(window):
+
     allowed_tries = tk.IntVar(value=3)
+
+    # If no password is set, prompt user to set new password
     if keychain.get_password() == "":
-        print("No Password Was Set")
+        # print("Debug: No Password Was Set")
         load_keys_on_startup()
         main_frame.pack(pady=20)
         bottom_frame.pack()
+        menu_edit_password()
         return
 
     authenticate_window = tk.Tk()
     authenticate_window.title("Authenticate User")
-    # root.resizable(False, False)
+    authenticate_window.resizable(False, False)
 
     # Set the size of the pop-up window
     width = 350
@@ -89,18 +94,24 @@ def authenticate_user(window):
                 print("User Authenticated")
                 emoji_label.destroy()
                 load_keys_on_startup()
+                keychain.save_keychain(get_save_path("data.bin"))
                 authenticate_window.destroy()
                 main_frame.pack(pady=20)
                 bottom_frame.pack()
         else:
             print("Authentication Failed")
+
+            # Resetting Password and Destroying Keychain
+            keychain.key_list = []
+            keychain.set_password("")
+            keychain.save_keychain(get_save_path("data.bin"))
+
             window.destroy()
             authenticate_window.destroy()
 
 
 
     # Set the widgets
-
     emoji_label = tk.Label(authenticate_window, text="🔐", font=("Arial", 50), fg="white")
     emoji_label.pack()
 
@@ -138,14 +149,14 @@ def menu_edit_password():
 
     def set_password():
         if passwordVar1.get()  == "" :
-            warning_msg.set("Enter New Password")
+            warning_msg.set("Enter a password")
         elif passwordVar2.get() == "" :
             warning_msg.set("Confirm password.")
         elif passwordVar1.get() != passwordVar2.get():
             warning_msg.set("Passwords do not match.")
         else:
             keychain.set_password(passwordVar1.get())
-            keychain.save_keychain("data.bin")
+            keychain.save_keychain(get_save_path("data.bin"))
             messagebox.showinfo("Password Changed", "Password has been changed")
             popup.destroy()
 
@@ -160,12 +171,12 @@ def menu_edit_password():
     # Centering window function
     center_window(popup, width, height)
 
-    label = ttk.Label(popup, text="Enter New Password")
+    label = ttk.Label(popup, text="Enter Password")
     label.pack(side="top", expand=True, )
 
-    input1 = ttk.Entry(popup, textvariable=passwordVar1, justify="center")
+    input1 = ttk.Entry(popup, textvariable=passwordVar1, justify="center", show="*")
     input1.pack(side="top", expand=True)
-    input2 = ttk.Entry(popup, textvariable=passwordVar2, justify="center")
+    input2 = ttk.Entry(popup, textvariable=passwordVar2, justify="center", show="*")
     input2.pack(side="top", expand=True)
 
     label_error_warning = ttk.Label(popup, textvariable=warning_msg)
@@ -481,8 +492,6 @@ add_button = ttk.Button(bottom_frame, text="Add", command=add_key_popup)
 add_button.pack(side="right",  padx=10)
 
 
-
-
 # debug_label = ttk.Label(window, text=f"{label_variable}")
 # debug_label.pack()
 # print_key = ttk.Button(window, text="Print Keys", command=print_keychain)
@@ -494,8 +503,6 @@ add_button.pack(side="right",  padx=10)
 # # Start the Tkinter main loop
 # root.mainloop()
 
-
-
 authenticate_user(window)
 window.mainloop()
-keychain.save_keychain("data.bin") #Save keychain when app quits
+keychain.save_keychain(get_save_path("data.bin")) #Save keychain when app quits
