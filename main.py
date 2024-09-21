@@ -1,8 +1,10 @@
 from zipfile import PyZipFile
-
+import os
+import sys
 from Keychain import *
 from password_generator import password_generator
 import tkinter as tk
+from data_path import *
 from tkinter import ttk, StringVar, Entry
 from tkinter import messagebox
 from tkinter import filedialog
@@ -18,6 +20,7 @@ Bugs:
     - pyinstaller using -w not working, keys arent saved
 
 """
+
 def load_file():
     file_path = filedialog.askopenfilename(
         title="Choose Keychain  File",
@@ -145,7 +148,7 @@ def menu_edit_password():
             warning_msg.set("Passwords do not match.")
         else:
             keychain.set_password(passwordVar1.get())
-            keychain.save_keychain()
+            keychain.save_keychain(get_save_path("data.bin"))
             messagebox.showinfo("Password Changed", "Password has been changed")
             popup.destroy()
 
@@ -481,8 +484,6 @@ add_button = ttk.Button(bottom_frame, text="Add", command=add_key_popup)
 add_button.pack(side="right",  padx=10)
 
 
-
-
 # debug_label = ttk.Label(window, text=f"{label_variable}")
 # debug_label.pack()
 # print_key = ttk.Button(window, text="Print Keys", command=print_keychain)
@@ -494,8 +495,6 @@ add_button.pack(side="right",  padx=10)
 # # Start the Tkinter main loop
 # root.mainloop()
 
-
-
 authenticate_user(window)
 window.mainloop()
-keychain.save_keychain("data.bin") #Save keychain when app quits
+keychain.save_keychain(get_save_path("data.bin")) #Save keychain when app quits
