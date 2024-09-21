@@ -12,6 +12,7 @@ TODO:
     - load_key on startup could use some refinements, could for example rename it so it isn't implied to be 
     only used during startup
     - import/export reusing multiple code fragments, need to clean that up
+    - implement time-out function
 
 Bugs:
     - pyinstaller using --onefile not working, keys arent saved. Something with the paths
@@ -26,8 +27,6 @@ def load_file():
         filetypes=[("Binary", "*.bin"), ("All Files", "*.*")]
     )
     print(file_path)
-    # keychain.load_keychain(file_path)
-    # # load_keys_on_startup()
 
     if file_path:
         print(f"Selected file: {file_path}")
@@ -57,8 +56,10 @@ def save_file():
 def authenticate_user(window):
 
     allowed_tries = tk.IntVar(value=3)
+
+    # If no password is set, prompt user to set new password
     if keychain.get_password() == "":
-        print("No Password Was Set")
+        # print("Debug: No Password Was Set")
         load_keys_on_startup()
         main_frame.pack(pady=20)
         bottom_frame.pack()
@@ -67,7 +68,7 @@ def authenticate_user(window):
 
     authenticate_window = tk.Tk()
     authenticate_window.title("Authenticate User")
-    # root.resizable(False, False)
+    authenticate_window.resizable(False, False)
 
     # Set the size of the pop-up window
     width = 350
@@ -100,6 +101,7 @@ def authenticate_user(window):
         else:
             print("Authentication Failed")
 
+            # Resetting Password and Destroying Keychain
             keychain.key_list = []
             keychain.set_password("")
             keychain.save_keychain(get_save_path("data.bin"))
@@ -110,7 +112,6 @@ def authenticate_user(window):
 
 
     # Set the widgets
-
     emoji_label = tk.Label(authenticate_window, text="🔐", font=("Arial", 50), fg="white")
     emoji_label.pack()
 
