@@ -9,17 +9,28 @@ from tkinter import filedialog
 """
 
 TODO:
+    
+    - implement time-out function
+    - implement delete confirmation
+    - implement reordering single row using two buttons on the side of the Treeview
+    
+Optimization:   
     - load_key on startup could use some refinements, could for example rename it so it isn't implied to be 
     only used during startup
     - import/export reusing multiple code fragments, need to clean that up
-    - implement time-out function
+    
 
 Bugs:
     - pyinstaller using --onefile not working, keys arent saved. Something with the paths
-    --windowed works though
+    --windowed works though. Some reasons, in mac, pyinstaller STILL create a single file executable s
+    that's ok...
     
-
 """
+
+def close_app():
+    pass
+
+
 
 def load_file():
     file_path = filedialog.askopenfilename(
