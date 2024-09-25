@@ -1,4 +1,5 @@
 from Keychain import *
+from encryption import password
 from password_generator import password_generator
 import tkinter as tk
 from data_path import *
@@ -26,6 +27,59 @@ Bugs:
     that's ok...
     
 """
+
+""" Pseudo code
+
+obj = {
+    1:"Tuyen",
+    2: "Vinh",
+    3: "Linh",
+}
+
+def up(obj_id):
+    tmp = obj[obj_id -1]
+    obj[obj_id - 1] = obj[obj_id]
+    obj[obj_id] = tmp
+    
+"""
+def move_key_up():
+        # Get the selected item (assumes only one item is selected)
+        selected_item = password_table.selection()[0]
+        if not selected_item:
+            return  # No item selected
+
+        index = password_table.index(selected_item)  # Get the current index of the selected item
+        print(f"index: {index}")
+
+        # If it's not the first item, move it up
+        if index > 0:
+            parent = password_table.parent(selected_item)  # Get the parent of the item
+            password_table.move(selected_item, parent, index - 1)  # Move the item up
+
+            # Mirror treeview to keychain data
+            tmp_key = keychain.key_list[index]
+            keychain.key_list[index] = keychain.key_list[index - 1]
+            keychain.key_list[index - 1] = tmp_key
+
+def move_key_down():
+    # Get the selected item (assumes only one item is selected)
+    selected_item = password_table.selection()
+    if not selected_item:
+        return  # No item selected
+
+    item = selected_item[0]  # Get the first (and only) selected item
+    index = password_table.index(item)  # Get the current index of the selected item
+    parent = password_table.parent(item)  # Get the parent of the item
+
+    # If it's not the last item, move it down
+    if index < len(password_table.get_children(parent)) - 1:
+        password_table.move(item, parent, index + 1)  # Move the item down
+
+        # Mirror Treeview to Keychain data
+        tmp_key = keychain.key_list[index]
+        keychain.key_list[index] = keychain.key_list[index + 1]
+        keychain.key_list[index + 1] = tmp_key
+
 
 def close_app():
     root.destroy()
@@ -508,6 +562,13 @@ password_variable = tk.StringVar()
 #Setting bottom buttons inside a frame and center it
 bottom_frame = tk.Frame(root)
 # bottom_frame.pack() # packing in during authentication
+
+up_button = ttk.Button(bottom_frame, text="▲", command=move_key_up)
+up_button.pack(side="left", padx=10)
+arrange_label = ttk.Label(bottom_frame, text="Arrange Key")
+arrange_label.pack(side="left")
+down_button = ttk.Button(bottom_frame, text="▼", command=move_key_down)
+down_button.pack(side="left", padx=10)
 
 delete_button = ttk.Button(bottom_frame, text="Delete", command=delete_key_event)
 delete_button.pack(side="right", padx=10)
