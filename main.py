@@ -9,10 +9,10 @@ from tkinter import filedialog
 """
 
 TODO:
-    
-    - implement time-out function
-    - implement delete confirmation
+    - change name of the app using pyinstaller --windowed --name="My Password Manager" main.py
+    - implement separator in Treeview using blank rows
     - implement reordering single row using two buttons on the side of the Treeview
+    - the encryption password and salt are hard-coded. Take them out
     
 Optimization:   
     - load_key on startup could use some refinements, could for example rename it so it isn't implied to be 
@@ -28,9 +28,16 @@ Bugs:
 """
 
 def close_app():
-    pass
+    root.destroy()
+    messagebox.showinfo("Timed Out", "App timed out due to inactivity.")
 
+def reset_timer(event=None):
+    root.after_cancel(timer)
+    start_timer()
 
+def start_timer():
+    global timer
+    timer = root.after(60000, close_app)
 
 def load_file():
     file_path = filedialog.askopenfilename(
@@ -109,6 +116,7 @@ def authenticate_user(window):
                 authenticate_window.destroy()
                 main_frame.pack(pady=20)
                 bottom_frame.pack()
+                start_timer() # timer to auto close up after a certain time
         else:
             print("Authentication Failed")
 
@@ -117,7 +125,7 @@ def authenticate_user(window):
             keychain.set_password("")
             keychain.save_keychain(get_save_path("data.bin"))
 
-            window.destroy()
+            root.destroy()
             authenticate_window.destroy()
 
 
@@ -171,7 +179,7 @@ def menu_edit_password():
             messagebox.showinfo("Password Changed", "Password has been changed")
             popup.destroy()
 
-    popup = tk.Toplevel(window)  # Make the pop-up window a child of the main window
+    popup = tk.Toplevel(root)  # Make the pop-up window a child of the main window
     popup.title("Set Keychain Password")
     popup.resizable(False, False)
 
@@ -208,7 +216,7 @@ def edit_key_popup():
         edited_key = password_table.selection()[0]
         item_values = password_table.item(edited_key, 'values')
 
-        popup = tk.Toplevel(window)  # Make the pop-up window a child of the main window
+        popup = tk.Toplevel(root)  # Make the pop-up window a child of the main window
         popup.title("Edit Key")
         popup.resizable(False, False)
 
@@ -235,7 +243,7 @@ def edit_key_popup():
             print(f"Username: {popup_username_variable.get()}")
             print(f"Password: {popup_password_variable.get()}")
 
-            result = messagebox.askyesno("Confirm", "Update Password?")
+            result = messagebox.askyesno("Confirm", "Update Key?")
             if result:
                 keychain.modify_key(id=new_id, label=popup_label_variable.get(), username=popup_username_variable.get(), password=popup_password_variable.get())
                 password_table.item(edited_key, values=(new_id, popup_label_variable.get(), popup_username_variable.get(), popup_password_variable.get()))
@@ -294,7 +302,7 @@ def add_key_popup():
     password_variable.set("")
 
 
-    popup = tk.Toplevel(window)  # Make the pop-up window a child of the main window
+    popup = tk.Toplevel(root)  # Make the pop-up window a child of the main window
     popup.title("Add Key")
     popup.resizable(False, False)
 
@@ -369,11 +377,14 @@ def delete_key_event():
         deleted_key = password_table.selection()[0]
         deleted_key_values = password_table.item(deleted_key, 'values')
 
-        # remove key from treeview
-        password_table.delete(deleted_key)
+        result = messagebox.askokcancel("Delete Key", "Are you sure you want to delete this key?")
+        if result:
+            # remove key from treeview
+            password_table.delete(deleted_key)
 
-        # remove key from keychain key_list
-        keychain.remove_key(int(deleted_key_values[0]))
+            # remove key from keychain key_list using the id of the key
+            keychain.remove_key(int(deleted_key_values[0]))
+
     except IndexError:
         error_msg = "No key selected."
         messagebox.showwarning("Attention!", error_msg)
@@ -403,8 +414,8 @@ def on_copy(event):
     cell_value = password_table.item(item_id, 'values')[col_index]
 
     # Copy the cell value to the clipboard
-    window.clipboard_clear()  # Clear the clipboard
-    window.clipboard_append(cell_value)  # Append the copied cell value
+    root.clipboard_clear()  # Clear the clipboard
+    root.clipboard_append(cell_value)  # Append the copied cell value
     print(cell_value)
     # messagebox.showinfo("Copied", f"Copied: {cell_value}")
 
@@ -418,18 +429,23 @@ def show_context_menu(event):
 
 keychain = Keychain()
 
-window = tk.Tk()
-window.title("My Password Manager")
-center_window(window, 800, 500)
-window.resizable(False, False)
 
-emoji_label = tk.Label(window, text="🔐")
+root = tk.Tk()
+root.title("My Password Manager")
+center_window(root, 800, 500)
+root.resizable(False, False)
+
+# Bind key and mouse events to reset the inactivity timer
+root.bind_all("<KeyPress>", reset_timer)
+root.bind_all("<Motion>", reset_timer)
+
+emoji_label = tk.Label(root, text="🔐")
 
 ################################# Menu ##################################
 
 # Create Menu Bar
-menu = tk.Menu(window)
-window.config(menu=menu)
+menu = tk.Menu(root)
+root.config(menu=menu)
 
 #Create Menu Items
 
@@ -441,12 +457,12 @@ file_menu.add_separator()
 file_menu.add_command(label="Set Password...", command = menu_edit_password)
 file_menu.add_separator()
 file_menu.add_command(label="Debug: Print Keychain", command = print_keychain)
-file_menu.add_command(label="Quit Password Manager", command = window.quit)
+file_menu.add_command(label="Quit Password Manager", command = root.quit)
 # main_frame.pack(pady=20)
 
 ############################## MAIN FRAME #################################
 
-main_frame = tk.Frame(window)
+main_frame = tk.Frame(root)
 # main_frame.pack(pady=20) #packing it during authentication
 
 #Scroll bar for the TreeView
@@ -475,7 +491,7 @@ password_table.column("password", width=250, anchor="center")
 
 # Create context menu to handle right click copy to clipboard functionality
 # Create the context menu
-context_menu = tk.Menu(window, tearoff=0)
+context_menu = tk.Menu(root, tearoff=0)
 context_menu.add_command(label="Copy value...")
 
 #bind the right click (button 3) to show context menu
@@ -490,7 +506,7 @@ username_variable = tk.StringVar()
 password_variable = tk.StringVar()
 
 #Setting bottom buttons inside a frame and center it
-bottom_frame = tk.Frame(window)
+bottom_frame = tk.Frame(root)
 # bottom_frame.pack() # packing in during authentication
 
 delete_button = ttk.Button(bottom_frame, text="Delete", command=delete_key_event)
@@ -502,18 +518,6 @@ edit_button.pack(side="right", padx=10)
 add_button = ttk.Button(bottom_frame, text="Add", command=add_key_popup)
 add_button.pack(side="right",  padx=10)
 
-
-# debug_label = ttk.Label(window, text=f"{label_variable}")
-# debug_label.pack()
-# print_key = ttk.Button(window, text="Print Keys", command=print_keychain)
-# print_key.pack(side="right", pady=20)
-
-# # Bind the right-click (button 3) to show the context menu
-# tree.bind("<Button-3>", show_context_menu)
-#
-# # Start the Tkinter main loop
-# root.mainloop()
-
-authenticate_user(window)
-window.mainloop()
+authenticate_user(root)
+root.mainloop()
 keychain.save_keychain(get_save_path("data.bin")) #Save keychain when app quits
