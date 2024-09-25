@@ -12,7 +12,6 @@ from tkinter import filedialog
 TODO:
     - change name of the app using pyinstaller --windowed --name="My Password Manager" main.py
     - implement separator in Treeview using blank rows
-    - implement reordering single row using two buttons on the side of the Treeview
     - the encryption password and salt are hard-coded. Take them out
     
 Optimization:   
