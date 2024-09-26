@@ -2,8 +2,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.fernet import Fernet, InvalidToken
 import base64
-import os
-import pickle
 
 password = b"my_super_secret_password"
 salt = b"&fj3adslkj$39-kjhu3"

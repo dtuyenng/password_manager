@@ -1,5 +1,4 @@
 from Keychain import *
-from encryption import password
 from password_generator import password_generator
 import tkinter as tk
 from data_path import *
@@ -12,6 +11,9 @@ from tkinter import filedialog
 TODO:
     - change name of the app using pyinstaller --windowed --name="My Password Manager" main.py
     - implement separator in Treeview using blank rows
+    - implement "notes" field
+    - implement double-click to "show more" to view notes, add a "have notes" icon to row
+    - implement edit for "notes"
     - the encryption password and salt are hard-coded. Take them out
     
 Optimization:   
