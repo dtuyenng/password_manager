@@ -10,7 +10,6 @@ from tkinter import filedialog
 
 TODO:
     - change name of the app using pyinstaller --windowed --name="My Password Manager" main.py
-    - implement separator in Treeview using blank rows
     - implement "notes" field
     - implement double-click to "show more" to view notes, add a "have notes" icon to row
     - implement edit for "notes"
@@ -410,6 +409,13 @@ def load_keys_on_startup():
         new_key = (key.id, key.label, key.username, key.password)
         password_table.insert(parent="", index=key.id, values=new_key)
 
+def insert_separator():
+    keychain.add_key(" ", " ", " ")
+    last_key_added = keychain.key_list[-1]
+    password_table.insert("", "end", values=(last_key_added.id, last_key_added.label, last_key_added.username, last_key_added.password))
+    print("Separator")
+
+
 def add_key_button_event(popup):
     label = label_variable.get()
     username = username_variable.get()
@@ -419,9 +425,9 @@ def add_key_button_event(popup):
         keychain.add_key(label, username, password)
         print("Key added to Keychain")
 
-        # Get the last added key and update the table
+        # Get the last(i.e "new") added key and update the table
         new_key = keychain.key_list[-1]
-        password_table.insert("", "end", values=(new_key.id, new_key.label, new_key.username, new_key.password))
+        password_table.insert("", "end", values=(new_key.label, new_key.username, new_key.password))
         popup.destroy()
     else:
         error_msg = "Please fill all required field"
@@ -438,6 +444,7 @@ def delete_key_event():
             password_table.delete(deleted_key)
 
             # remove key from keychain key_list using the id of the key
+            print("Key deleted id" + str(deleted_key))
             keychain.remove_key(int(deleted_key_values[0]))
 
     except IndexError:
@@ -547,7 +554,15 @@ password_table.column("password", width=250, anchor="center")
 # Create context menu to handle right click copy to clipboard functionality
 # Create the context menu
 context_menu = tk.Menu(root, tearoff=0)
-context_menu.add_command(label="Copy value...")
+context_menu.add_command(label="Copy Value...")
+# context_menu.add_separator()
+# context_menu.add_command(label="Add Separator")
+# context_menu.add_command(label="Add Key", command=add_key_popup)
+# context_menu.add_command(label="Edit Key")
+# context_menu.add_separator()
+# context_menu.add_command(label="Delete Key")
+
+
 
 #bind the right click (button 3) to show context menu
 password_table.bind("<Button-2>", show_context_menu)
@@ -564,12 +579,14 @@ password_variable = tk.StringVar()
 bottom_frame = tk.Frame(root)
 # bottom_frame.pack() # packing in during authentication
 
-up_button = ttk.Button(bottom_frame, text="▲", command=move_key_up)
-up_button.pack(side="left", padx=10)
-arrange_label = ttk.Label(bottom_frame, text="Arrange Key")
-arrange_label.pack(side="left")
-down_button = ttk.Button(bottom_frame, text="▼", command=move_key_down)
-down_button.pack(side="left", padx=10)
+up_button = ttk.Button(bottom_frame, text="▲", command=move_key_up, width=1)
+up_button.pack(side="left", padx=5)
+# arrange_label = ttk.Label(bottom_frame, text="Arrange Key")
+# arrange_label.pack(side="left")
+add_separator = tk.Button(bottom_frame, text="-", command=insert_separator, width=1)
+add_separator.pack(side="left", padx=5)
+down_button = ttk.Button(bottom_frame, text="▼", command=move_key_down, width=1)
+down_button.pack(side="left", padx=5)
 
 delete_button = ttk.Button(bottom_frame, text="Delete", command=delete_key_event)
 delete_button.pack(side="right", padx=10)
