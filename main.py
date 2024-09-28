@@ -19,6 +19,7 @@ Optimization:
     - load_key on startup could use some refinements, could for example rename it so it isn't implied to be 
     only used during startup
     - import/export reusing multiple code fragments, need to clean that up
+    - move password special character into a config file, maybe include the salt there too.
     
 
 Bugs:

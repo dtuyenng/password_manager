@@ -18,7 +18,7 @@ def password_generator (password_length: int) -> str:
                replace("l", "")
                )
     numbers = string.digits.replace("0", "")
-    symbols = "$%#&^*-"
+    symbols = "@#*()+={}/?~;,.-_"
 
     # initiate password as an empty list
     pwd = []
