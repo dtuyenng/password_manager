@@ -82,7 +82,7 @@ def move_key_down():
 
 
 def close_app():
-    root.destroy()
+    root.quit()
     messagebox.showinfo("Timed Out", "App timed out due to inactivity.")
 
 def reset_timer(event=None):
@@ -126,6 +126,7 @@ def save_file():
         print("AttributeError")
 
 def authenticate_user(window):
+    start_timer()  # timer to auto close up after a certain time
 
     allowed_tries = tk.IntVar(value=3)
 
@@ -149,7 +150,7 @@ def authenticate_user(window):
     # Center the pop-up window
     center_window(authenticate_window, width, height)
 
-    def check_authentication():
+    def check_authentication(event=None):
         entered_password = input_password.get()
 
         if allowed_tries.get() > 0:
@@ -170,7 +171,6 @@ def authenticate_user(window):
                 authenticate_window.destroy()
                 main_frame.pack(pady=20)
                 bottom_frame.pack()
-                start_timer() # timer to auto close up after a certain time
         else:
             print("Authentication Failed")
 
@@ -200,6 +200,8 @@ def authenticate_user(window):
 
     warning_label = ttk.Label(authenticate_window, text="")
     warning_label.pack()
+
+    authenticate_window.bind("<Return>", check_authentication)
 
 
 def center_window(window, width, height):
