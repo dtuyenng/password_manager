@@ -28,20 +28,6 @@ Bugs:
     
 """
 
-""" Pseudo code
-
-obj = {
-    1:"Tuyen",
-    2: "Vinh",
-    3: "Linh",
-}
-
-def up(obj_id):
-    tmp = obj[obj_id -1]
-    obj[obj_id - 1] = obj[obj_id]
-    obj[obj_id] = tmp
-    
-"""
 def move_key_up():
         # Get the selected item (assumes only one item is selected)
         selected_item = password_table.selection()[0]
