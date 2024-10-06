@@ -74,6 +74,7 @@ def move_key_down():
 
 def close_app():
     root.quit()
+    root.destroy()
     messagebox.showinfo("Timed Out", "App timed out due to inactivity.")
 
 def reset_timer(event=None):
