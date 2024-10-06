@@ -28,6 +28,8 @@ Bugs:
     
 """
 
+app_name = "English 101 Class Notes"
+
 def move_key_up():
         # Get the selected item (assumes only one item is selected)
         selected_item = password_table.selection()[0]
@@ -144,7 +146,8 @@ def authenticate_user(window):
             if allowed_tries.get() > 1:
                 warning_label.config(text=f"Tries Left: {allowed_tries.get()}")
             else:
-                warning_label.config(text="Last Chance Before Keychain Destruction.")
+                warning_label.config(text="Last Chance Before Data Destruction.")
+
             allowed_tries.set(allowed_tries.get() - 1)
             input_password.delete(0, tk.END)
             input_password.focus()
@@ -479,9 +482,8 @@ def show_context_menu(event):
 
 keychain = Keychain()
 
-
 root = tk.Tk()
-root.title("My Password Manager")
+root.title(app_name)
 center_window(root, 800, 500)
 root.resizable(False, False)
 
