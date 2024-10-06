@@ -22,9 +22,12 @@ Optimization:
     
 
 Bugs:
-    - pyinstaller using --onefile not working, keys arent saved. Something with the paths
+    - pyinstaller using --onefile not working, keys arent saved. Something with the paths (solved use 
+       --add-data pyinstaller  --windowed --add-data 'data.bin:.'  main.py and spec file)
     --windowed works though. Some reasons, in mac, pyinstaller STILL create a single file executable s
     that's ok...
+    -- password destruction on failed signin attempt it bugged. Destroy on second to last attempt. Logic
+    flawed
     
 """
 
@@ -116,7 +119,7 @@ def save_file():
 def authenticate_user(window):
     start_timer()  # timer to auto close up after a certain time
 
-    allowed_tries = tk.IntVar(value=3)
+    allowed_tries = tk.IntVar(value=100)
 
     # If no password is set, prompt user to set new password
     if keychain.get_password() == "":
@@ -418,7 +421,7 @@ def add_key_button_event(popup):
 
         # Get the last(i.e "new") added key and update the table
         new_key = keychain.key_list[-1]
-        password_table.insert("", "end", values=(new_key.label, new_key.username, new_key.password))
+        password_table.insert("", "end", values=(new_key.id, new_key.label, new_key.username, new_key.password))
         popup.destroy()
     else:
         error_msg = "Please fill all required field"
