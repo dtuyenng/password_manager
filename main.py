@@ -506,7 +506,7 @@ file_menu.add_command(label="Export Keychain...", command = save_file)
 file_menu.add_separator()
 file_menu.add_command(label="Set Password...", command = menu_edit_password)
 file_menu.add_separator()
-file_menu.add_command(label="Debug: Print Keychain", command = print_keychain)
+# file_menu.add_command(label="Debug: Print Keychain", command = print_keychain)
 file_menu.add_command(label="Quit Password Manager", command = root.quit)
 # main_frame.pack(pady=20)
 
