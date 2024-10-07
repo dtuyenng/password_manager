@@ -26,9 +26,7 @@ Bugs:
        --add-data pyinstaller  --windowed --add-data 'data.bin:.'  main.py and spec file)
     --windowed works though. Some reasons, in mac, pyinstaller STILL create a single file executable s
     that's ok...
-    -- password destruction on failed signin attempt it bugged. Destroy on second to last attempt. Logic
-    flawed
-    
+
 """
 
 app_name = "English 101 Class Notes"
@@ -51,6 +49,7 @@ def move_key_up():
             tmp_key = keychain.key_list[index]
             keychain.key_list[index] = keychain.key_list[index - 1]
             keychain.key_list[index - 1] = tmp_key
+
 
 def move_key_down():
     # Get the selected item (assumes only one item is selected)
@@ -77,13 +76,16 @@ def close_app():
     root.destroy()
     messagebox.showinfo("Timed Out", "App timed out due to inactivity.")
 
+
 def reset_timer(event=None):
     root.after_cancel(timer)
     start_timer()
 
+
 def start_timer():
     global timer
     timer = root.after(60000, close_app)
+
 
 def load_file():
     file_path = filedialog.askopenfilename(
@@ -109,6 +111,7 @@ def load_file():
         except Exception as e:
             print(f"Error loading file: {e}")
 
+
 def save_file():
     try:
         file = filedialog.asksaveasfile(mode="wb", defaultextension=".bin", filetypes=[("Binary files", "*.bin"), ("All files", "*.*")])
@@ -117,10 +120,11 @@ def save_file():
     except AttributeError:
         print("AttributeError")
 
+
 def authenticate_user(window):
     start_timer()  # timer to auto close up after a certain time
 
-    allowed_tries = tk.IntVar(value=100)
+    allowed_tries = tk.IntVar(value=3)
 
     # If no password is set, prompt user to set new password
     if keychain.get_password() == "":
@@ -145,16 +149,12 @@ def authenticate_user(window):
     def check_authentication(event=None):
         entered_password = input_password.get()
 
-        if allowed_tries.get() > 0:
+        if allowed_tries.get() >= 0:
 
             if allowed_tries.get() > 1:
                 warning_label.config(text=f"Tries Left: {allowed_tries.get()}")
             else:
                 warning_label.config(text="Last Chance Before Data Destruction.")
-
-            allowed_tries.set(allowed_tries.get() - 1)
-            input_password.delete(0, tk.END)
-            input_password.focus()
 
             if entered_password == keychain.get_password():
                 print("User Authenticated")
@@ -164,6 +164,10 @@ def authenticate_user(window):
                 authenticate_window.destroy()
                 main_frame.pack(pady=20)
                 bottom_frame.pack()
+            else:
+                allowed_tries.set(allowed_tries.get() - 1)
+                input_password.delete(0, tk.END)
+                input_password.focus()
         else:
             print("Authentication Failed")
 
@@ -210,6 +214,7 @@ def center_window(window, width, height):
     # Set the window size and position
     window.geometry(f"{width}x{height}+{x}+{y}")
 
+
 def menu_edit_password():
     passwordVar1 = tk.StringVar()
     passwordVar2 = tk.StringVar()
@@ -253,8 +258,8 @@ def menu_edit_password():
     set_button = ttk.Button(popup, text="Set Password", command=set_password)
     set_button.pack(side="top", expand=True)
 
-def edit_key_popup():
 
+def edit_key_popup():
     """
     Strange bug issue, the StringVar varibles won't display in entry unless one of the button calls their
     get() methods in the command: parameters
@@ -343,6 +348,7 @@ def edit_key_popup():
         messagebox.showwarning("Attention!", error_msg)
         print(error_msg)
 
+
 def add_key_popup():
 
     #clear variables
@@ -395,6 +401,7 @@ def add_key_popup():
     generate_password_button = ttk.Button(popup_frame, text="Generate Random", width=2, command=lambda: password_variable.set(password_generator(20)))
     generate_password_button.grid(row=5, column=1, sticky="NSEW")
 
+
 def load_keys_on_startup():
     # Delete all items in the Treeview
     for item in password_table.get_children():
@@ -403,6 +410,7 @@ def load_keys_on_startup():
     for key in keychain.key_list:
         new_key = (key.id, key.label, key.username, key.password)
         password_table.insert(parent="", index=key.id, values=new_key)
+
 
 def insert_separator():
     keychain.add_key(" ", " ", " ")
@@ -428,6 +436,7 @@ def add_key_button_event(popup):
         error_msg = "Please fill all required field"
         messagebox.showwarning("Attention!", error_msg)
 
+
 def delete_key_event():
     try:
         deleted_key = password_table.selection()[0]
@@ -447,12 +456,14 @@ def delete_key_event():
         messagebox.showwarning("Attention!", error_msg)
         print(error_msg)
 
+
 def print_keychain():
     print(keychain.key_list)
     print("\n")
     print(keychain.get_password())
     for key in keychain.key_list:
         print(key.id, key.label, key.username, key.password)
+
 
 def on_copy(event):
     # Get the item and column where the right-click occurred
@@ -475,6 +486,7 @@ def on_copy(event):
     root.clipboard_append(cell_value)  # Append the copied cell value
     print(cell_value)
     # messagebox.showinfo("Copied", f"Copied: {cell_value}")
+
 
 def show_context_menu(event):
     # Only show the context menu if the right-click is over a valid item
