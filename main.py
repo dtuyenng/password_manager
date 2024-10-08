@@ -6,29 +6,6 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog
 
-"""
-
-TODO:
-    - change name of the app using pyinstaller --windowed --name="My Password Manager" main.py
-    - implement "notes" field
-    - implement double-click to "show more" to view notes, add a "have notes" icon to row
-    - implement edit for "notes"
-    - the encryption password and salt are hard-coded. Take them out
-    
-Optimization:   
-    - load_key on startup could use some refinements, could for example rename it so it isn't implied to be 
-    only used during startup
-    - import/export reusing multiple code fragments, need to clean that up
-    
-
-Bugs:
-    - pyinstaller using --onefile not working, keys arent saved. Something with the paths (solved use 
-       --add-data pyinstaller  --windowed --add-data 'data.bin:.'  main.py and spec file)
-    --windowed works though. Some reasons, in mac, pyinstaller STILL create a single file executable s
-    that's ok...
-
-"""
-
 app_name = "English 101 Class Notes"
 
 def move_key_up():
